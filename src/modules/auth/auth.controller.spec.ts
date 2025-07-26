@@ -1,6 +1,8 @@
 import { AuthController } from '@/modules/auth/auth.controller';
-import { AuthService } from '@/modules/auth/auth.service';
+import { CreateUserDto } from '@/modules/auth/auth.dto';
 import { User } from '@/modules/users/user.entity';
+import { UsersService } from '@/modules/users/users.service';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 
@@ -24,9 +26,14 @@ describe('AuthController', () => {
     }).useMocker((token) => {
 
 
-      if (token === AuthService) {
+      if (token === UsersService) {
         return {
-          createUser: jest.fn().mockResolvedValue(mockUser),
+          createUser: jest.fn().mockImplementation((dto: CreateUserDto) => {
+            if (dto.email === "ben@example.com") {
+              throw new BadRequestException("Email already registered");
+            }
+            return Promise.resolve(mockUser);
+          }),
         };
       }
 
@@ -48,10 +55,13 @@ describe('AuthController', () => {
     };
 
     it('should register a user and return a success message', async () => {
-      
       const result = await controller.register(dto);
- 
       expect(result).toEqual(mockUser);
     });
+
+    it("should throw error if email is already registered", async () => {
+      await expect(controller.register({...dto, email: "ben@example.com"})).rejects.toThrow(new BadRequestException("Email already registered"));
+    })
+
   });
 })
