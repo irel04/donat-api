@@ -1,4 +1,5 @@
 import { AuthController } from '@/modules/auth/auth.controller';
+import { AuthService } from '@/modules/auth/auth.service';
 import { User } from '@/modules/users/user.entity';
 import { UsersService } from '@/modules/users/users.service';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 describe('AuthController', () => {
   let controller: AuthController;
   let userService: UsersService;
+  let authService: AuthService;
 
   const mockUser: User = {
     id: '1',
@@ -28,6 +30,7 @@ describe('AuthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
+        AuthService,
         {
           provide: UsersService,
           useValue: mockUserService,
@@ -39,6 +42,7 @@ describe('AuthController', () => {
     (AuthController);
 
     userService = module.get<UsersService>(UsersService);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
@@ -63,13 +67,20 @@ describe('AuthController', () => {
 
       expect(registerSpy).toHaveBeenCalledWith(dto);
       expect(result).toEqual(mockUser);
-    });
-
-    it("should hide sensitive data", async () => {
-      
-    })
-
-    
-
+    });    
   });
+
+
+  describe("sign-in", () => {
+    it("should call authservice", () => {
+      
+      const signInSpy = jest.spyOn(authService, 'signIn');
+
+      controller.signIn({email: "test@example.com", password: "password"});
+
+      expect(signInSpy).toHaveBeenCalled();
+    })
+  })
+
+
 })

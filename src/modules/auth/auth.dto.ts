@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/mapped-types';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
@@ -16,3 +17,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   role: string; // Assuming role is a string, adjust as necessary
 }
+
+
+export class SignInDTO extends PickType(CreateUserDto, ['email', 'password'] as const) {}
