@@ -1,4 +1,4 @@
-import { SignInDTO, SignInResponseDTO } from '@/modules/auth/auth.dto';
+import { SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { UsersService } from '@/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -12,11 +12,11 @@ export class AuthService {
 		private readonly jwtService: JwtService, // Assuming JwtService is imported and used
 	) { }
 
-	private generateAccessToken(payload: any): Promise<string> {
+	private generateAccessToken(payload: Record<string, string>): Promise<string> {
 		return this.jwtService.signAsync(payload);
 	}
 
-	private generateRefreshToken(payload: any): Promise<string> {
+	private generateRefreshToken(payload: Record<string, string>): Promise<string> {
 		return this.jwtService.signAsync(payload, { expiresIn: '7d' });
 	}
 

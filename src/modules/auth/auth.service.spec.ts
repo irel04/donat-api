@@ -57,7 +57,7 @@ describe('AuthService', () => {
 
 		it("should return access token and refresh token", async () => {
 
-			jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
+			jest.spyOn(bcrypt, 'compare').mockImplementation(() => true);
 
 
 			const result = await service.signIn(signinDto.email, signinDto.password);
