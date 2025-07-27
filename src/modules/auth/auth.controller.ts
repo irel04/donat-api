@@ -1,4 +1,4 @@
-import { CreateUserDto, SignInDTO } from '@/modules/auth/auth.dto';
+import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { User } from '@/modules/users/user.entity';
 // import { AuthService } from '@/modules/auth/auth.service';
@@ -17,14 +17,8 @@ export class AuthController {
 	}
 
 	@Post('sign-in')
-	signIn(@Body() dto: SignInDTO): { accessToken: string } {
-		// Assuming AuthService is implemented and has a signIn method
-		// const token = await this.authService.signIn(dto.email, dto.password);
-		// return { accessToken: token };
-
-		this.authService.signIn(dto.email, dto.password);
-
-		// Placeholder for actual sign-in logic
-		return { accessToken: 'mocked-access-token' };
+	signIn(@Body() dto: SignInDTO): Promise<SignInResponseDTO> {
+		return this.authService.signIn(dto.email, dto.password);
 	}
+
 }

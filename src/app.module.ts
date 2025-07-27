@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      // ignoreEnvFile: true,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

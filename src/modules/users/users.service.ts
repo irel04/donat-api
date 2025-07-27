@@ -32,5 +32,7 @@ export class UsersService {
 		return this.userRepository.save(user);
 	}
 
-	
+	async findOne(userName: string): Promise<User | null> {
+		return await this.userRepository.findOne({ where: { email: userName } });
+	}
 }

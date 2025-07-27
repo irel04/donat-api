@@ -20,3 +20,8 @@ export class CreateUserDto {
 
 
 export class SignInDTO extends PickType(CreateUserDto, ['email', 'password'] as const) {}
+
+export class SignInResponseDTO {
+  accessToken: string;
+  refreshToken: string;
+}

@@ -21,25 +21,33 @@ describe('AuthController', () => {
     createdAt: new Date(),
   };
 
-  const mockUserService = {
-    createUser: jest.fn(),
-  };
 
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        AuthService,
+        {
+          provide: AuthService,
+          useValue: {
+            signIn: jest.fn().mockResolvedValue({
+              accessToken: 'token',
+              refreshToken: 'token',
+            }),
+          }
+        },
         {
           provide: UsersService,
-          useValue: mockUserService,
-        },
+          useValue: {
+            createUser: jest.fn().mockResolvedValue(mockUser),
+            findOne: jest.fn().mockResolvedValue(mockUser),
+          },
+        }
       ],
     }).compile();
 
     controller = module.get<AuthController>
-    (AuthController);
+      (AuthController);
 
     userService = module.get<UsersService>(UsersService);
     authService = module.get<AuthService>(AuthService);
@@ -59,24 +67,24 @@ describe('AuthController', () => {
         role: 'user', // Assuming role is a string, adjust as necessary
       };
 
-      mockUserService.createUser.mockResolvedValue(mockUser);
 
       const registerSpy = jest.spyOn(userService, 'createUser');
 
-      const result =await controller.register(dto);
+      const result = await controller.register(dto);
 
       expect(registerSpy).toHaveBeenCalledWith(dto);
       expect(result).toEqual(mockUser);
-    });    
+    });
   });
 
 
   describe("sign-in", () => {
-    it("should call authservice", () => {
-      
+    it("should call authservice", async () => {
+
       const signInSpy = jest.spyOn(authService, 'signIn');
 
-      controller.signIn({email: "test@example.com", password: "password"});
+
+      await controller.signIn({ email: "test@example.com", password: "password" });
 
       expect(signInSpy).toHaveBeenCalled();
     })
