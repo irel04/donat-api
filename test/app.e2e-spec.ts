@@ -16,10 +16,36 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterAll(async () => {
+    await app.close()
+  })
+
+  it('/auth/register (POST)', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/register')
+      .send({
+        email: 'test@example.com',
+        password: 'password',
+        firstName: 'John',
+        lastName: 'Doe',
+        role: 'user'
+      })
+      .expect(400)
   });
+
+  it('/auth/sign-in (POST)', () => {
+    return request(app.getHttpServer())
+    .post('/auth/sign-in')
+    .send({
+      email: 'test@example.com',
+      password: 'password'
+    })
+    .expect(200)
+    .expect((res) => {
+      expect(res.body).toHaveProperty('accessToken');
+      expect(res.body).toHaveProperty('refreshToken');
+    })
+  })
+
+
 });
