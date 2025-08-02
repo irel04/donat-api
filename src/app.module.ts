@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -10,16 +10,20 @@ import { UsersModule } from './modules/users/users.module';
       isGlobal: true,
       // ignoreEnvFile: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQLHOST,
-      port: parseInt(process.env.MYSQLPORT!, 10),
-      username: process.env.MYSQLUSER,
-      password: process.env.MYSQLPASSWORD,
-      database: process.env.MYSQLDATABASE,
-      entities: [],
-      autoLoadEntities: true,
-      // synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql' as const,
+        host: configService.get<string>("MYSQLHOST"),
+        port: parseInt(configService.get<string>("MYSQLPORT")!, 10),
+        username: configService.get<string>("MYSQLUSER"),
+        password: configService.get<string>("MYSQLPASSWORD"),
+        database: configService.get<string>("MYSQLDATABASE"),
+        entities: [],
+        autoLoadEntities: true,
+        // synchronize: true,
+      }),
+      inject: [ConfigService]
     }),
     AuthModule,
     UsersModule,
