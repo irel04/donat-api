@@ -3,7 +3,7 @@ import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/auth
 import { AuthService } from '@/modules/auth/auth.service';
 import { User } from '@/modules/users/user.entity';
 import { UsersService } from '@/modules/users/users.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, Post, Request, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')

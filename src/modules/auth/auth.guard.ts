@@ -1,4 +1,5 @@
 import { IS_PUBLIC_KEY } from '@/common/publicDecorator';
+import { JWTPayload } from '@/modules/auth/auth.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
@@ -24,7 +25,7 @@ export class AuthGuard implements CanActivate {
 			return true;
 		}
 
-		const req = context.switchToHttp().getRequest();
+		const req = context.switchToHttp().getRequest<Request>();
 		const token = this.extractTokenFromHeader(req)
 
 		if(!token){
@@ -32,7 +33,7 @@ export class AuthGuard implements CanActivate {
 		}
 
 		try {
-			const payload = await this.jwtService.verifyAsync(
+			const payload: Partial<JWTPayload> = await this.jwtService.verifyAsync(
 				token,
 				{
 					secret: this.configService.get<string>("MYSECRET")
@@ -40,8 +41,9 @@ export class AuthGuard implements CanActivate {
 			)
 
 
-			req.user = payload;
+			req["user"] = payload;
 		} catch (error) {
+			console.error('JWT Verification failed: ', error);
 			throw new UnauthorizedException("Invalid or expired token");
 		}
 
