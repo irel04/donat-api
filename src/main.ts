@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from '@/common/transform.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@/modules/auth/auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
