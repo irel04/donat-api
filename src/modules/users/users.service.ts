@@ -28,11 +28,15 @@ export class UsersService {
 			firstName: payload.firstName,
 			lastName: payload.lastName,
 		});
-
+		
 		return this.userRepository.save(user);
 	}
 
-	async findOne(userName: string): Promise<User | null> {
-		return await this.userRepository.findOne({ where: { email: userName } });
+	async findOne(email: string): Promise<User | null> {
+		return await this.userRepository.findOne({ where: { email } });
+	}
+
+	async findByUserId(id: string): Promise<User | null> {
+		return await this.userRepository.findOneBy({ id })
 	}
 }

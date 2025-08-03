@@ -1,4 +1,4 @@
-import { Public } from '@/common/publicDecorator';
+import { Public } from '@/common/decorators/public.decorator';
 import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { User } from '@/modules/users/user.entity';
@@ -24,7 +24,7 @@ export class AuthController {
 		return this.authService.signIn(dto.email, dto.password);
 	}
 
-	
+
 
 
 }

@@ -1,3 +1,4 @@
+import { Role } from '@/common/decorators/role.decorator';
 import { SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { UsersService } from '@/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -8,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 export interface JWTPayload {
 	sub: string
 	email: string
+	role: Role 
 	iat: number
 	exp: number
 }
@@ -34,7 +36,7 @@ export class AuthService {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		const payload: Partial<JWTPayload> = { sub: user.id, email: user.email };
+		const payload: Partial<JWTPayload> = { sub: user.id, email: user.email, role:  user.role as Role};
 		
 		return {
 
