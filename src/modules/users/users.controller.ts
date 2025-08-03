@@ -1,10 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Role, Roles } from '@/common/decorators/role.decorator';
+import { Controller, Get, Request } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
-	// @UseGuards(AuthGuard)
-	// @Get("profile")
-	// getProfile(@Request() req) {
-	// 	return req.user
-	// }
+	
+
 }
