@@ -1,4 +1,4 @@
-import { IS_PUBLIC_KEY } from '@/common/decorators/public.decortator';
+import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
 import { JWTPayload } from '@/modules/auth/auth.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

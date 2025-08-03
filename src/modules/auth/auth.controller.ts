@@ -1,4 +1,4 @@
-import { Public } from '@/common/decorators/public.decortator';
+import { Public } from '@/common/decorators/public.decorator';
 import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { User } from '@/modules/users/user.entity';
