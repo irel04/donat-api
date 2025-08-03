@@ -5,6 +5,8 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
+import { randomUUID } from 'node:crypto';
+import { BadRequestException } from '@nestjs/common';
 
 
 describe("User Service", () => {
@@ -44,6 +46,7 @@ describe("User Service", () => {
 			}),
 			create: jest.fn().mockReturnValue(resolvedValue),
 			save: jest.fn().mockResolvedValue(resolvedValue),
+			findOneBy: jest.fn().mockResolvedValue(resolvedValue),
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
@@ -62,21 +65,34 @@ describe("User Service", () => {
 
 	describe("createUser", () => {
 		it("check the user with same email", async () => {
-		const registerSpy = jest.spyOn(service, 'createUser');
-		await expect(service.createUser(testingDTO)).rejects.toThrow('Email already registered');
-		expect(registerSpy).toHaveBeenCalledWith(testingDTO);
-
+			await expect(service.createUser(testingDTO)).rejects.toThrow("Email already registered")
+			// expect(userRepository.create).toHaveBeenCalledWith(testingDTO)
 	})
 
 	it("should hashed the password before saving", async () => {
 		const bcryptSpy = jest.spyOn(bcrypt, 'hash');
-
 		await service.createUser({...testingDTO, email: "john@example.com"});
-		
 		expect(bcryptSpy).toHaveBeenCalled();
 		expect(bcryptSpy).toHaveBeenCalledWith(testingDTO.password, 10);
 		expect(userRepository.save).toHaveBeenCalled();
 	})
+	})
+
+	describe("findOne", () => {
+		it('return user using email', () => {
+			service.findOne(testingDTO.email);
+			expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: testingDTO.email } })
+			
+		})
+	})
+
+
+	describe("findUserById", () => {
+		it('returns user via user id', async () => {
+			const id = randomUUID()
+			await service.findByUserId(id)
+			expect(userRepository.findOneBy).toHaveBeenCalledWith({ id })
+		})
 	})
 
 

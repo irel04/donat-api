@@ -67,12 +67,9 @@ describe('AuthController', () => {
         role: 'user', // Assuming role is a string, adjust as necessary
       };
 
-
-      const registerSpy = jest.spyOn(userService, 'createUser');
-
       const result = await controller.register(dto);
 
-      expect(registerSpy).toHaveBeenCalledWith(dto);
+      expect(userService.createUser).toHaveBeenCalledWith(dto);
       expect(result).toEqual(mockUser);
     });
   });
@@ -81,12 +78,11 @@ describe('AuthController', () => {
   describe("sign-in", () => {
     it("should call authservice", async () => {
 
-      const signInSpy = jest.spyOn(authService, 'signIn');
 
 
       await controller.signIn({ email: "test@example.com", password: "password" });
 
-      expect(signInSpy).toHaveBeenCalled();
+      expect(authService.signIn).toHaveBeenCalled();
     })
   })
 
