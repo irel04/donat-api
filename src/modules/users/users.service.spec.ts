@@ -6,7 +6,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { randomUUID } from 'node:crypto';
-import { BadRequestException } from '@nestjs/common';
 
 
 describe("User Service", () => {
@@ -79,8 +78,8 @@ describe("User Service", () => {
 	})
 
 	describe("findOne", () => {
-		it('return user using email', () => {
-			service.findOne(testingDTO.email);
+		it('return user using email', async () => {
+			await service.findOne(testingDTO.email);
 			expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: testingDTO.email } })
 			
 		})

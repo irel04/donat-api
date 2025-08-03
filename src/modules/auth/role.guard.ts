@@ -3,7 +3,6 @@ import { JWTPayload } from '@/modules/auth/auth.service';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
 
 
 
@@ -16,8 +15,6 @@ export class RolesGuard implements CanActivate {
 			context.getHandler(),
 			context.getClass()
 		])
-
-		console.info(requiredRoles)
 
 		if(!requiredRoles){
 			return true
