@@ -35,6 +35,6 @@ export class EventsEntity {
 	createdAt: Date;
 
 	@Exclude()
-	@Column({ name: "updated_at", type: "timestamp", nullable: true })
+	@Column({ name: "updated_at", type: "timestamp", nullable: true, default: null })
 	updatedAt: Date | null;
 }

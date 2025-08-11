@@ -44,23 +44,22 @@ describe('EventsService', () => {
       endDate
     }
 
-
-    eventsRepository = {
-      create: jest.fn().mockReturnValue(resolvedValue),
-      save: jest.fn().mockResolvedValue(resolvedValue)
-    }
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EventsService,
         {
           provide: getRepositoryToken(EventsEntity),
-          useValue: eventsRepository
+          useValue: {
+            create: jest.fn().mockReturnValue(resolvedValue),
+            save: jest.fn().mockResolvedValue(resolvedValue),
+            findOne: jest.fn().mockResolvedValue(resolvedValue)
+          }
         }
       ],
     }).compile();
 
     service = module.get<EventsService>(EventsService);
+    eventsRepository = module.get<Partial<Repository<EventsEntity>>>(getRepositoryToken(EventsEntity));
 
   });
 
@@ -71,12 +70,12 @@ describe('EventsService', () => {
   describe("create an event", () => {
 
     it("should call event repository create and save", async () => {
-      await service.createEvent(eventsPayload)
-      expect(eventsRepository.create).toHaveBeenCalledWith(eventsPayload)
+      await service.createEvent(eventsPayload, dummyUser.id)
+      expect(eventsRepository.create).toHaveBeenCalledWith({ ...eventsPayload, status: EventStatus.PENDING, user: { id: dummyUser.id } })
     })
 
     it("should call saved and return must be equal to expected", async () => {
-      const result = await service.createEvent(eventsPayload)
+      const result = await service.createEvent(eventsPayload, dummyUser.id)
       expect(eventsRepository.save).toHaveBeenCalled()
       expect(result).toEqual(resolvedValue)
     })
