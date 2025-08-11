@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 export function IsValidDateFormat(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
@@ -8,13 +8,13 @@ export function IsValidDateFormat(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, _args: ValidationArguments) {
+        validate(value: unknown) {
           return (
             typeof value === 'string' &&
             /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/.test(value)
           );
         },
-        defaultMessage(_args: ValidationArguments) {
+        defaultMessage() {
           return `${propertyName} must be in the format MM/DD/YYYY`;
         },
       },

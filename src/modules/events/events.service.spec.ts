@@ -10,7 +10,7 @@ import { CreateEventDTO } from '@/modules/events/events.dto';
 describe('EventsService', () => {
   let service: EventsService;
   let eventsRepository: jest.Mocked<Partial<Repository<EventsEntity>>>;
-  let [startDate, endDate] = ["04/05/2026", "04/06/2026"]
+  const [startDate, endDate] = ["04/05/2026", "04/06/2026"]
   let dummyUser: User;
   let resolvedValue: EventsEntity 
   let eventsPayload: CreateEventDTO;
