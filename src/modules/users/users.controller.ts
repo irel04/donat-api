@@ -5,7 +5,7 @@ import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@n
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
-	path: "me",
+	path: "user",
 	version: "1"
 })
 export class UsersController {
@@ -15,7 +15,7 @@ export class UsersController {
 	){}
 
 
-	@Get('me')
+	@Get("me")
 	getUserById(@UserParam("sub") sub: string): Promise<User | null> {
 		return this.service.findByUserId(sub)
 	}
