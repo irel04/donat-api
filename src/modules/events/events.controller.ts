@@ -4,7 +4,10 @@ import { EventsService } from '@/modules/events/events.service';
 import { Body, ClassSerializerInterceptor, Controller, Post, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller('events')
+@Controller({
+	path: "events",
+	version: "1"
+})
 export class EventsController {
 	constructor(
 		private eventService: EventsService

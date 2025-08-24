@@ -4,7 +4,10 @@ import { UsersService } from '@/modules/users/users.service';
 import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller('users')
+@Controller({
+	path: "me",
+	version: "1"
+})
 export class UsersController {
 	
 	constructor(
