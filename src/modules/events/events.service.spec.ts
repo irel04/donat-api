@@ -10,7 +10,7 @@ import { CreateEventDTO } from '@/modules/events/events.dto';
 describe('EventsService', () => {
   let service: EventsService;
   let eventsRepository: jest.Mocked<Partial<Repository<EventsEntity>>>;
-  const [startDate, endDate] = ["04/05/2026", "04/06/2026"]
+  const [startDate, endDate] = ["04-05-2026", "04-06-2026"]
   let dummyUser: User;
   let resolvedValue: EventsEntity 
   let eventsPayload: CreateEventDTO;
@@ -52,7 +52,9 @@ describe('EventsService', () => {
           useValue: {
             create: jest.fn().mockReturnValue(resolvedValue),
             save: jest.fn().mockResolvedValue(resolvedValue),
-            findOne: jest.fn().mockResolvedValue(resolvedValue)
+            findOne: jest.fn().mockResolvedValue(resolvedValue),
+            find: jest.fn().mockResolvedValue([resolvedValue]),
+            findAndCount: jest.fn().mockResolvedValue([[resolvedValue], 1])
           }
         }
       ],
@@ -79,7 +81,21 @@ describe('EventsService', () => {
       expect(eventsRepository.save).toHaveBeenCalled()
       expect(result).toEqual(resolvedValue)
     })
+  })
 
+  describe("get events", () => {
+    
+    it("should return all events when no params are provided", async () => {
+      const result = await service.findAllEvents()
+      expect(result).toEqual({
+        data: [resolvedValue],
+        total: 1
+      });
+    })
 
+    it("should call with skip and take when limit and offset is provided as param", async () => {
+      await service.findAllEvents(10, 1);
+      expect(eventsRepository.findAndCount).toHaveBeenCalledWith({ relations: ['user'], skip: 1, take: 10 })
+    })
   })
 });

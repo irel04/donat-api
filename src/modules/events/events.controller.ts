@@ -1,7 +1,9 @@
+import { Public } from '@/common/decorators/public.decorator';
 import { UserParam } from '@/common/decorators/user.decorator';
-import { CreateEventDTO } from '@/modules/events/events.dto';
+import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
+import { CreateEventDTO, PaginationDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
-import { Body, ClassSerializerInterceptor, Controller, Post, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
@@ -16,6 +18,25 @@ export class EventsController {
 	@Post()
 	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UserParam("sub") userId: string){
 		return this.eventService.createEvent(createEventDto, userId);
+	}
+
+	@Public()
+	@Get()
+	async getAllEvents(@Query() { limit = 20, offset = 0 }: PaginationDTO) {
+
+		const { data, total } = await this.eventService.findAllEvents(limit, offset);
+
+		const metadata: PaginationMetadata = {
+			limit,
+			offset,
+			total,
+			nextPage: offset + limit < total ? offset + limit : null
+		}
+
+		return {
+			data,
+			metadata
+		};
 	}
 
 

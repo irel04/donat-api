@@ -4,13 +4,13 @@ import { EventsService } from '@/modules/events/events.service';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { User } from '@/modules/users/user.entity';
 import { randomUUID } from 'crypto';
-import { CreateEventDTO } from '@/modules/events/events.dto';
+import { CreateEventDTO, PaginationDTO } from '@/modules/events/events.dto';
 
 describe('EventsController', () => {
   let controller: EventsController;
   let service: EventsService
 
-  const [startDate, endDate] = ["04/05/2026", "04/06/2026"]
+  const [startDate, endDate] = ["04-05-2026", "04-06-2026"]
   let dummyUser: User;
   let resolvedValue: EventsEntity;
   let eventsPayload: CreateEventDTO; 
@@ -50,7 +50,8 @@ describe('EventsController', () => {
     }).useMocker((token) => {
       if(token === EventsService){
         return {
-          createEvent: jest.fn().mockResolvedValue(resolvedValue)
+          createEvent: jest.fn().mockResolvedValue(resolvedValue),
+          findAllEvents: jest.fn().mockResolvedValue([resolvedValue])
         }
       }
     })
@@ -70,6 +71,27 @@ describe('EventsController', () => {
 
       expect(service.createEvent).toHaveBeenCalledWith(eventsPayload, dummyUser.id);
       expect(response).toEqual(resolvedValue)
+    })
+  })
+
+  describe('findAllEvents', () => {
+    it('should call findAllEvents and return the expected value', async () => {
+      const query: PaginationDTO = {
+        offset: 0,
+        limit: 10,
+      }
+      const response = await controller.getAllEvents(query);
+
+      expect(service.findAllEvents).toHaveBeenCalledWith(query.limit, query.offset);
+      expect(response).toEqual({
+        data: [resolvedValue], 
+        metadata: {
+          offset:0,
+          limit: 10,
+          total: 1,
+          nextPage: null
+        }
+      });
     })
   })
 });

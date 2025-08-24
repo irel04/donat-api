@@ -42,20 +42,17 @@ export class EventsService {
 		
 		return foundEvent;
 	}
+	
+	async findAllEvents(limit: number = 20, offset: number = 0): Promise<{ data: EventsEntity[], total: number }> {
 
-	async findAllEvents(limit?: number, offset: number = 0): Promise<{data: EventsEntity[], total: number} | EventsEntity[]>{
+			const [data, total] = await this.eventsRepository.findAndCount({
+				relations: ['user'],
+				skip: offset,
+				take: limit
+			})
 
-		if(!limit && !offset){
-			return this.eventsRepository.find({ relations: ['user'] });
-		}
 
-		const [events, total] = await this.eventsRepository.findAndCount({
-			relations: ['user'],
-			skip: offset,
-			take: limit
-		})
-
-		return { data: events, total };
+		return { data, total };
 	}
 
 	

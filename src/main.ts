@@ -9,7 +9,9 @@ async function bootstrap() {
     type: VersioningType.URI,
   })
   app.useGlobalInterceptors(new TransformInterceptor());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true
+  }));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
