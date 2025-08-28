@@ -51,8 +51,15 @@ export class EventsService {
 				take: limit
 			})
 
-
 		return { data, total };
+	}
+
+	async findEventById(id: string): Promise<EventsEntity | null>{
+		const event = await this.eventsRepository.findOneBy({
+			id
+		})
+
+		return event;
 	}
 
 	

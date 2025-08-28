@@ -22,7 +22,9 @@ export class AuthService {
 	) { }
 
 	private generateAccessToken(payload: Partial<JWTPayload>): Promise<string> {
-		return this.jwtService.signAsync(payload);
+		return this.jwtService.signAsync(payload, {
+			expiresIn: '1h',
+		});
 	}
 
 	private generateRefreshToken(payload: Partial<JWTPayload>): Promise<string> {
@@ -39,7 +41,6 @@ export class AuthService {
 		const payload: Partial<JWTPayload> = { sub: user.id, email: user.email, role:  user.role as Role};
 		
 		return {
-
 			accessToken: await this.generateAccessToken(payload),
 			refreshToken: await this.generateRefreshToken(payload),
 		};

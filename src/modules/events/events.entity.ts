@@ -10,7 +10,7 @@ export enum EventStatus {
 
 @Entity({ name: "events" })
 export class EventsEntity {
-	@Exclude()
+	// @Exclude()
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 

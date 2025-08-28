@@ -53,6 +53,7 @@ describe('EventsService', () => {
             create: jest.fn().mockReturnValue(resolvedValue),
             save: jest.fn().mockResolvedValue(resolvedValue),
             findOne: jest.fn().mockResolvedValue(resolvedValue),
+            findOneBy: jest.fn().mockResolvedValue(resolvedValue),
             find: jest.fn().mockResolvedValue([resolvedValue]),
             findAndCount: jest.fn().mockResolvedValue([[resolvedValue], 1])
           }
@@ -96,6 +97,20 @@ describe('EventsService', () => {
     it("should call with skip and take when limit and offset is provided as param", async () => {
       await service.findAllEvents(10, 1);
       expect(eventsRepository.findAndCount).toHaveBeenCalledWith({ relations: ['user'], skip: 1, take: 10 })
+    })
+  })
+
+  describe("get events by id", () => {
+    it("should call findOne with correct id", async () => {
+      await service.findEventById(resolvedValue.id);
+      expect(eventsRepository.findOneBy).toHaveBeenCalledWith({
+        id: resolvedValue.id
+      });
+    })
+
+    it("should return event", async () => {
+      const result = await service.findEventById(resolvedValue.id);
+      expect(result).toEqual(resolvedValue);
     })
   })
 });

@@ -51,7 +51,11 @@ describe('EventsController', () => {
       if(token === EventsService){
         return {
           createEvent: jest.fn().mockResolvedValue(resolvedValue),
-          findAllEvents: jest.fn().mockResolvedValue([resolvedValue])
+          findAllEvents: jest.fn().mockResolvedValue({
+            data: [resolvedValue],
+            total: 1
+          }),
+          findEventById: jest.fn().mockResolvedValue(resolvedValue)
         }
       }
     })
@@ -92,6 +96,18 @@ describe('EventsController', () => {
           nextPage: null
         }
       });
+    })
+  })
+
+  describe("findEventById", () => {
+    it("should call findEventById with correct id", async () => {
+      await controller.getEventById(resolvedValue.id);
+      expect(service.findEventById).toHaveBeenCalledWith(resolvedValue.id);
+    })
+
+    it("should return event", async () => {
+      const result = await controller.getEventById(resolvedValue.id);
+      expect(result).toEqual(resolvedValue);
     })
   })
 });
