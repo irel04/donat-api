@@ -39,6 +39,25 @@ export class EventsController {
 		};
 	}
 
+	@Get('me')
+	async getMyEvents(@UserParam("sub") userId: string, @Query() { limit = 20, offset = 0 }: PaginationDTO) {
+
+		const { data, total } = await this.eventService.findEventByUser(userId, limit, offset);
+
+		const metadata: PaginationMetadata = {
+			limit,
+			offset,
+			total,
+			nextPage: offset + limit < total ? offset + limit : null
+		}
+
+		return {
+			data,
+			metadata
+		};
+	}
+
+
 	@Public()
 	@Get(':eventId')
 	async getEventById(@Param('eventId') eventId: string) {
@@ -52,4 +71,6 @@ export class EventsController {
 		return event;
 	}
 
+	
+		
 }

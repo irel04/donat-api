@@ -17,32 +17,7 @@ describe('EventsService', () => {
 
   
   beforeEach(async () => {
-    dummyUser = Object.assign(new User(), {
-      id: randomUUID(),
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      password: 'hashedpassword123',
-      role: 'admin',
-      createdAt: new Date(),
-    });
-
-    resolvedValue = {
-      id: randomUUID(),
-      description: "Fund Raising",
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      status: EventStatus.PENDING,
-      user: dummyUser,
-      createdAt: new Date(),
-      updatedAt: null,
-    }
-
-    eventsPayload = {
-      description: "Fund Raising",
-      startDate,
-      endDate
-    }
+    
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -111,6 +86,17 @@ describe('EventsService', () => {
     it("should return event", async () => {
       const result = await service.findEventById(resolvedValue.id);
       expect(result).toEqual(resolvedValue);
+    })
+  })
+
+  describe("get user events", () => {
+    it("should call findOne with correct user id", async () => {
+      await service.findEventByUser(dummyUser.id, 10, 1);
+      expect(eventsRepository.findAndCount).toHaveBeenCalledWith({
+        where: { user: { id: dummyUser.id } },
+        skip: 1,
+        take: 10
+      });
     })
   })
 });

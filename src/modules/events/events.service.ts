@@ -62,5 +62,13 @@ export class EventsService {
 		return event;
 	}
 
-	
+	async findEventByUser(userId: string, limit: number = 20, offset: number = 0): Promise<{ data: EventsEntity[], total: number }> {
+		const [events, total] = await this.eventsRepository.findAndCount({
+			where: { user: { id: userId } },
+			skip: offset,
+			take: limit
+		})
+
+		return { data: events, total };
+	}
 }
