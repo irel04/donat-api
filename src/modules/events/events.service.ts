@@ -31,11 +31,11 @@ export class EventsService {
 
 		const savedEvent = await this.eventsRepository.save(event);
 
-		const foundEvent = await this.eventsRepository.findOne
-		({
+		const foundEvent = await this.eventsRepository.findOne({
 			where: {id: savedEvent.id},
 			relations: ['user']
 		});
+		
 		if (!foundEvent) {
 			throw new Error('Event not found after creation');
 		}
