@@ -71,4 +71,30 @@ export class EventsService {
 
 		return { data: events, total };
 	}
+
+	async editMyEvent(payload: CreateEventDTO, eventId: string, userId: string): Promise<Partial<EventsEntity> | null>{
+
+		// Check if event is existing
+		const event = await this.eventsRepository.findOneBy({
+			id: eventId,
+			user: {
+				id: userId
+			}
+		})
+
+		if(!event) return null;
+
+		// Proceed to editing when event is found
+		await this.eventsRepository.update({
+			id: eventId,
+			user: {
+				id: userId
+			}
+		}, payload)
+
+		return this.eventsRepository.findOneBy({
+			id: eventId
+		})
+
+	}
 }

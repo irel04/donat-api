@@ -3,7 +3,7 @@ import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
 import { CreateEventDTO, PaginationDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
@@ -71,6 +71,15 @@ export class EventsController {
 		return event;
 	}
 
-	
+	@Patch(":eventId/edit-my-event")
+	async editMyEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string, @Body() payload: CreateEventDTO){
+		const event = await this.eventService.editMyEvent(payload, eventId, userId)
+
+		if(!event){
+			throw new NotFoundException("Event associated with the provided credential was not found")
+		}
+
+		return event;
+	}
 		
 }

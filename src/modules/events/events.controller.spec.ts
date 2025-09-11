@@ -60,7 +60,8 @@ describe('EventsController', () => {
           createEvent: jest.fn().mockResolvedValue(resolvedValue),
           findAllEvents: jest.fn().mockResolvedValue(resolvedArrayValueWithTotal),
           findEventById: jest.fn().mockResolvedValue(resolvedValue),
-          findEventByUser: jest.fn().mockResolvedValue(resolvedArrayValueWithTotal)
+          findEventByUser: jest.fn().mockResolvedValue(resolvedArrayValueWithTotal),
+          editMyEvent: jest.fn().mockResolvedValue(true)
         }
       }
     })
@@ -128,11 +129,22 @@ describe('EventsController', () => {
 
       expect(service.findEventByUser).toHaveBeenCalledWith(dummyUser.id, query.limit, query.offset)
     })
+  })
 
-    // it("should return event", async () => {
-    //   const result = await controller.getMyEvents(dummyUser.id, query);
-    //   expect(result).toEqual()
-      
-    // })
+  describe("event my event", () => {
+    const payload = {
+        description: "Change event desc",
+        endDate: "09-09-2025",
+        startDate: "09-02-2025"
+      }
+
+      const eventId = "event-123"
+      const userId = "user-123"
+
+    it("should call editMyEvent in service", async () => {
+      await controller.editMyEvent(eventId, userId, payload)
+
+      expect(service.editMyEvent).toHaveBeenCalledWith(payload, eventId, userId);
+    })
   })
 });

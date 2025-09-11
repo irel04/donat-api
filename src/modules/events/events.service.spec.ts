@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventsService } from './events.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
-import { randomUUID } from 'crypto';
 import { User } from '@/modules/users/user.entity';
 import { Repository } from 'typeorm';
 import { CreateEventDTO } from '@/modules/events/events.dto';
@@ -17,8 +16,34 @@ describe('EventsService', () => {
 
   
   beforeEach(async () => {
-    
 
+    dummyUser = Object.assign(new User(), {
+      id: "user-123",
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      password: 'hashedpassword123',
+      role: 'admin',
+      createdAt: new Date(),
+    });
+
+    resolvedValue = {
+      id: "event-123",
+      description: "Fund Raising",
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      status: EventStatus.PENDING,
+      user: dummyUser,
+      createdAt: new Date(startDate),
+      updatedAt: null,
+    }
+
+    eventsPayload = {
+      description: "Fund Raising",
+      startDate,
+      endDate
+    }
+    
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EventsService,
@@ -30,14 +55,19 @@ describe('EventsService', () => {
             findOne: jest.fn().mockResolvedValue(resolvedValue),
             findOneBy: jest.fn().mockResolvedValue(resolvedValue),
             find: jest.fn().mockResolvedValue([resolvedValue]),
-            findAndCount: jest.fn().mockResolvedValue([[resolvedValue], 1])
+            findAndCount: jest.fn().mockResolvedValue([[resolvedValue], 1]),
+            update: jest.fn().mockResolvedValue({
+              description: "test-description",
+              startDate: "sample date",
+              endDate: "end date sample"
+            })
           }
         }
       ],
     }).compile();
 
     service = module.get<EventsService>(EventsService);
-    eventsRepository = module.get<Partial<Repository<EventsEntity>>>(getRepositoryToken(EventsEntity));
+    eventsRepository = module.get<jest.Mocked<Partial<Repository<EventsEntity>>>>(getRepositoryToken(EventsEntity));
 
   });
 
@@ -99,4 +129,39 @@ describe('EventsService', () => {
       });
     })
   })
+
+  describe("edit my own event", () => {
+    it("it should call the right parameters", async () => {
+
+      const payload = {
+        description: "Change description",
+        startDate: "09-13-2025",
+        endDate: "09-14-2025"
+      };      
+
+      await service.editMyEvent(payload, "event-123", "user-123");
+
+      expect(eventsRepository.update).toHaveBeenCalledWith({
+        id: "event-123",
+        user: {
+          id: "user-123"
+        }
+      }, payload)
+    })
+
+    it("should return null when no event matches the detail", async () => {
+    const payload = {
+      description: "any",
+      startDate,
+      endDate
+    };
+
+    (eventsRepository.findOneBy as jest.Mock).mockImplementation(() => null);
+
+    const result = await service.editMyEvent(payload, "event-123", "user-irel");
+    expect(result).toBe(null)
+  })
+  })
+
+  
 });
