@@ -36,6 +36,7 @@ describe('EventsService', () => {
       user: dummyUser,
       createdAt: new Date(startDate),
       updatedAt: null,
+      isActive: true
     }
 
     eventsPayload = {
@@ -161,7 +162,7 @@ describe('EventsService', () => {
     const result = await service.editMyEvent(payload, "event-123", "user-irel");
     expect(result).toBe(null)
   })
-  })
+  }) 
 
-  
+
 });

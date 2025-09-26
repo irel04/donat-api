@@ -37,4 +37,8 @@ export class EventsEntity {
 	@Exclude()
 	@Column({ name: "updated_at", type: "timestamp", nullable: true, default: null })
 	updatedAt: Date | null;
+
+	@Column({name: "is_active", type: "boolean"})
+	isActive: boolean;
+
 }

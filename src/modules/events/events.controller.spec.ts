@@ -38,6 +38,7 @@ describe('EventsController', () => {
       user: dummyUser,
       createdAt: fixedDate,
       updatedAt: null,
+      isActive: true
     }
 
     eventsPayload = {
@@ -131,7 +132,7 @@ describe('EventsController', () => {
     })
   })
 
-  describe("event my event", () => {
+  describe("edit my event", () => {
     const payload = {
         description: "Change event desc",
         endDate: "09-09-2025",
@@ -145,6 +146,13 @@ describe('EventsController', () => {
       await controller.editMyEvent(eventId, userId, payload)
 
       expect(service.editMyEvent).toHaveBeenCalledWith(payload, eventId, userId);
+    })
+  })
+
+  describe("delete an event", () => {
+    it("should set the event to inactive", async () => {
+      
+
     })
   })
 });

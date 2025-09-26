@@ -1,7 +1,7 @@
 import { isValidDateFormat, isValidDateRange } from '@/common/utils/date.helper';
 import { CreateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,7 +12,11 @@ export class EventsService {
 		private eventsRepository: Repository<EventsEntity>
 	){}
 
+	// private readonly logger = new Logger(EventsService.name);
+
+
 	async createEvent(payload: CreateEventDTO, userId: string): Promise<EventsEntity>{
+		
 
 		// Add date validation
 		if (!isValidDateFormat(payload.startDate) || !isValidDateFormat(payload.endDate)) {
@@ -95,6 +99,30 @@ export class EventsService {
 		return this.eventsRepository.findOneBy({
 			id: eventId
 		})
+	}
 
+	async approveEvent (eventId: string){
+		const result = await this.eventsRepository.update({ id: eventId }, { status: EventStatus.APPROVED })
+
+		if(result.affected === 0){
+			throw new NotFoundException("Event not found");
+		}
+		
+	}
+
+	async deleteEvent(eventId: string, userId: string){
+		// Check first if event exist
+		const event = await this.eventsRepository.findOneBy({ id: eventId, user: { id: userId } })
+
+		if (!event) {
+			throw new NotFoundException("Event not found or already deleted");
+		}
+
+		// Will just mark the event as inactive
+		await this.eventsRepository.update({
+			id: eventId
+		}, {
+			isActive: false
+		})
 	}
 }

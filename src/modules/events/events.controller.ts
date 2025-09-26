@@ -1,9 +1,10 @@
 import { Public } from '@/common/decorators/public.decorator';
+import { Role, Roles } from '@/common/decorators/role.decorator';
 import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
 import { CreateEventDTO, PaginationDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
@@ -81,5 +82,19 @@ export class EventsController {
 
 		return event;
 	}
-		
+
+	// Approved event by user with role - Admin
+	@Patch(":eventId/approve-event")
+	@HttpCode(204)
+	@Roles(Role.Admin)
+	async approveEvent(@Param("eventId") eventId: string){
+		await this.eventService.approveEvent(eventId);
+	}
+
+	// Soft delete - marking event as inactive and will delete using CRON 
+	@Delete(":eventId")
+	@HttpCode(204)
+	async deleteEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string){
+		await this.eventService.deleteEvent(eventId, userId);
+	}
 }
