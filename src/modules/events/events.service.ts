@@ -49,19 +49,22 @@ export class EventsService {
 	
 	async findAllEvents(limit: number = 20, offset: number = 0): Promise<{ data: EventsEntity[], total: number }> {
 
-			const [data, total] = await this.eventsRepository.findAndCount({
-				relations: ['user'],
-				skip: offset,
-				take: limit
-			})
+		const [data, total] = await this.eventsRepository.findAndCount({
+			relations: ['user'],
+			skip: offset,
+			take: limit
+		})
 
 		return { data, total };
 	}
 
-	async findEventById(id: string): Promise<EventsEntity | null>{
-		const event = await this.eventsRepository.findOneBy({
-			id
-		})
+	async findEventById(id: string): Promise<EventsEntity>{
+		const event = await this.eventsRepository.findOne({
+			where: { id, isActive: true },
+			relations: ['user']
+		});
+
+		if(!event) throw new NotFoundException(`Event with id ${id} not found`);
 
 		return event;
 	}
@@ -70,7 +73,8 @@ export class EventsService {
 		const [events, total] = await this.eventsRepository.findAndCount({
 			where: { user: { id: userId } },
 			skip: offset,
-			take: limit
+			take: limit,
+			relations: ["user"]
 		})
 
 		return { data: events, total };
@@ -112,17 +116,12 @@ export class EventsService {
 
 	async deleteEvent(eventId: string, userId: string){
 		// Check first if event exist
-		const event = await this.eventsRepository.findOneBy({ id: eventId, user: { id: userId } })
-
-		if (!event) {
-			throw new NotFoundException("Event not found or already deleted");
-		}
-
-		// Will just mark the event as inactive
-		await this.eventsRepository.update({
-			id: eventId
-		}, {
+		const result = await this.eventsRepository.update({ id: eventId, user: { id: userId } }, {
 			isActive: false
 		})
+
+		if(result.affected === 0){
+			throw new NotFoundException("Event not found or already deleted")
+		}
 	}
 }

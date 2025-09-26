@@ -61,15 +61,8 @@ export class EventsController {
 
 	@Public()
 	@Get(':eventId')
-	async getEventById(@Param('eventId') eventId: string) {
-
-		const event = await this.eventService.findEventById(eventId);
-
-		if(!event){
-			throw new NotFoundException('Event not found');
-		}
-
-		return event;
+	getEventById(@Param('eventId') eventId: string) {
+		return this.eventService.findEventById(eventId);
 	}
 
 	@Patch(":eventId/edit-my-event")
