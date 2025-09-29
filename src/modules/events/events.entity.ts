@@ -24,10 +24,10 @@ export class EventsEntity {
 	@Column({ type: 'enum', enum: EventStatus })
 	status: EventStatus;
 
-	@Column({ name: 'start_date', type: 'timestamp' })
+	@Column({ name: 'start_date', type: 'date' })
 	startDate: Date;
 
-	@Column({ name: 'end_date', type: 'timestamp' })
+	@Column({ name: 'end_date', type: 'date' })
 	endDate: Date;
 
 	@Exclude()

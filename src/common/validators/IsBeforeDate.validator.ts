@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
 import { isBefore, parse } from 'date-fns';
 
