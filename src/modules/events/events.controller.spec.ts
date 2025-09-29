@@ -38,13 +38,17 @@ describe('EventsController', () => {
       user: dummyUser,
       createdAt: fixedDate,
       updatedAt: null,
-      isActive: true
+      isActive: true,
+      endTime: "9:00",
+      startTime: "8:00"
     }
 
     eventsPayload = {
       description: "Fund Raising",
       startDate,
-      endDate
+      endDate,
+      startTime: "3:00",
+      endTime: "14:00"
     }
 
     resolvedArrayValueWithTotal = {
@@ -136,7 +140,9 @@ describe('EventsController', () => {
     const payload = {
         description: "Change event desc",
         endDate: "09-09-2025",
-        startDate: "09-02-2025"
+        startDate: "09-02-2025",
+        startTime: "8:00",
+        endTime: "9:00"
       }
 
       const eventId = "event-123"

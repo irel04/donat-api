@@ -1,7 +1,6 @@
-import { isValidDateFormat, isValidDateRange } from '@/common/utils/date.helper';
-import { CreateEventDTO } from '@/modules/events/events.dto';
+import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,21 +11,9 @@ export class EventsService {
 		private eventsRepository: Repository<EventsEntity>
 	){}
 
-	// private readonly logger = new Logger(EventsService.name);
-
 
 	async createEvent(payload: CreateEventDTO, userId: string): Promise<EventsEntity>{
 		
-
-		// Add date validation
-		if (!isValidDateFormat(payload.startDate) || !isValidDateFormat(payload.endDate)) {
-			throw new BadRequestException('Invalid date format provided(use MM-DD-YYYY format)');
-		}
-
-		if(!isValidDateRange(payload.startDate, payload.endDate)){
-			throw new BadRequestException('Invalid date range provided');
-		}
-
 		const event = this.eventsRepository.create({
 			...payload,
 			status: EventStatus.PENDING,
@@ -80,7 +67,7 @@ export class EventsService {
 		return { data: events, total };
 	}
 
-	async editMyEvent(payload: CreateEventDTO, eventId: string, userId: string): Promise<Partial<EventsEntity> | null>{
+	async editMyEvent(payload: UpdateEventDTO, eventId: string, userId: string): Promise<Partial<EventsEntity> | null>{
 
 		// Check if event is existing
 		const event = await this.eventsRepository.findOneBy({

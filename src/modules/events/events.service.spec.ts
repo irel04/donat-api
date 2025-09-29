@@ -32,6 +32,8 @@ describe('EventsService', () => {
       description: "Fund Raising",
       startDate: new Date(startDate),
       endDate: new Date(endDate),
+      startTime: "8:00",
+      endTime: "9:00",
       status: EventStatus.PENDING,
       user: dummyUser,
       createdAt: new Date(startDate),
@@ -42,7 +44,9 @@ describe('EventsService', () => {
     eventsPayload = {
       description: "Fund Raising",
       startDate,
-      endDate
+      endDate,
+      startTime: "13:00",
+      endTime: "14:00"
     }
     
     const module: TestingModule = await Test.createTestingModule({

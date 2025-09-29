@@ -41,4 +41,10 @@ export class EventsEntity {
 	@Column({name: "is_active", type: "boolean"})
 	isActive: boolean;
 
+	@Column({name: "start_time", type: "time"})
+	startTime: string;
+
+	@Column({name: "end_time", type: "time"})
+	endTime: string;
+
 }

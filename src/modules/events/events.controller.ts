@@ -2,7 +2,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { Role, Roles } from '@/common/decorators/role.decorator';
 import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
-import { CreateEventDTO, PaginationDTO } from '@/modules/events/events.dto';
+import { CreateEventDTO, PaginationDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 
@@ -66,7 +66,7 @@ export class EventsController {
 	}
 
 	@Patch(":eventId/edit-my-event")
-	async editMyEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string, @Body() payload: CreateEventDTO){
+	async editMyEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string, @Body() payload: UpdateEventDTO){
 		const event = await this.eventService.editMyEvent(payload, eventId, userId)
 
 		if(!event){
