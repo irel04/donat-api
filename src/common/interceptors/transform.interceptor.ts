@@ -6,6 +6,7 @@ export interface PaginationMetadata {
 	total: number;
 	size: number;
 	page: number;
+	totalPage: number;
 	nextPage: number | null;
 }
 export interface TResponse<T> {

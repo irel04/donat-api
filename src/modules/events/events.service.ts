@@ -45,8 +45,8 @@ export class EventsService {
 		};
 
 		if(search){
-			where["description"] = ILike(search);
-		}
+			where["description"] = ILike(`%${search}%`);
+		}	
 
 		/* eslint-disable @typescript-eslint/no-unused-vars*/
 		if(Object.entries(EVENTS_FILTER).some(([_, val]) => val === sortBy)){

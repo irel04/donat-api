@@ -36,7 +36,8 @@ export class EventsController {
 
 		const metadata: PaginationMetadata = {
 			size,
-			page: page,
+			page: total > 0 ? page : 0,
+			totalPage: Math.ceil(total / size),
 			total,
 			nextPage: offset + size < total ? offset + size : null
 		}
@@ -60,7 +61,8 @@ export class EventsController {
 
 		const metadata: PaginationMetadata = {
 			size,
-			page,
+			page: total > 0 ? page : 0,
+			totalPage: Math.ceil(total / size),
 			total,
 			nextPage: offset + size < total ? offset + size : null
 		}
