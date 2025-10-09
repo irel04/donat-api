@@ -4,8 +4,8 @@ import { map, Observable } from 'rxjs';
 
 export interface PaginationMetadata {
 	total: number;
-	limit: number;
-	offset: number;
+	size: number;
+	page: number;
 	nextPage: number | null;
 }
 export interface TResponse<T> {

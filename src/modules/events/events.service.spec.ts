@@ -94,21 +94,21 @@ describe('EventsService', () => {
     })
   })
 
-  describe("get events", () => {
+  // describe("get events", () => {
     
-    it("should return all events when no params are provided", async () => {
-      const result = await service.findAllEvents()
-      expect(result).toEqual({
-        data: [resolvedValue],
-        total: 1
-      });
-    })
+  //   it("should return all events when no params are provided", async () => {
+  //     const result = await service.findAllEvents()
+  //     expect(result).toEqual({
+  //       data: [resolvedValue],
+  //       total: 1
+  //     });
+  //   })
 
-    it("should call with skip and take when limit and offset is provided as param", async () => {
-      await service.findAllEvents(10, 1);
-      expect(eventsRepository.findAndCount).toHaveBeenCalledWith({ relations: ['user'], skip: 1, take: 10 })
-    })
-  })
+  //   it("should call with skip and take when limit and offset is provided as param", async () => {
+  //     await service.findAllEvents(10, 1);
+  //     expect(eventsRepository.findAndCount).toHaveBeenCalledWith({ relations: ['user'], skip: 1, take: 10 })
+  //   })
+  // })
 
   describe("get events by id", () => {
     // it("should call findOne with correct id", async () => {

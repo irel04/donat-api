@@ -4,7 +4,8 @@ import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
 import { CreateEventDTO, PaginationDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+// import { EVENTS_FILTER, ORDER } from '@/types/filter';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
@@ -23,15 +24,21 @@ export class EventsController {
 
 	@Public()
 	@Get()
-	async getAllEvents(@Query() { limit = 20, offset = 0 }: PaginationDTO) {
+	async getAllEvents(@Query() { size = 20, page = 1, search, sortBy, sortOrder }: PaginationDTO) {
+		
+		if(page <= 0){
+			throw new BadRequestException("You cannot paginated less than or equal 0")
+		}
 
-		const { data, total } = await this.eventService.findAllEvents(limit, offset);
+		const offset = (page - 1) * size
+
+		const { data, total } = await this.eventService.findAllEvents(size, offset, search, sortBy, sortOrder);
 
 		const metadata: PaginationMetadata = {
-			limit,
-			offset,
+			size,
+			page: page,
 			total,
-			nextPage: offset + limit < total ? offset + limit : null
+			nextPage: offset + size < total ? offset + size : null
 		}
 
 		return {
@@ -41,15 +48,21 @@ export class EventsController {
 	}
 
 	@Get('me')
-	async getMyEvents(@UserParam("sub") userId: string, @Query() { limit = 20, offset = 0 }: PaginationDTO) {
+	async getMyEvents(@UserParam("sub") userId: string, @Query() { size = 20, page = 1 }: PaginationDTO) {
 
-		const { data, total } = await this.eventService.findEventByUser(userId, limit, offset);
+		if(page <= 0){
+			throw new BadRequestException("You cannot paginated less than or equal 0")
+		}
+
+		const offset = (page - 1) * size
+
+		const { data, total } = await this.eventService.findEventByUser(userId, size, offset);
 
 		const metadata: PaginationMetadata = {
-			limit,
-			offset,
+			size,
+			page,
 			total,
-			nextPage: offset + limit < total ? offset + limit : null
+			nextPage: offset + size < total ? offset + size : null
 		}
 
 		return {

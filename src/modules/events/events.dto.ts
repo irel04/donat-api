@@ -1,5 +1,6 @@
 import { IsBeforeConstraint } from '@/common/validators/IsBefore.validator';
 import { IsBeforeDateConstraint } from '@/common/validators/IsBeforeDate.validator';
+import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, Matches } from 'class-validator';
@@ -40,12 +41,20 @@ export class CreateEventDTO {
 
 export class UpdateEventDTO extends PartialType(CreateEventDTO){}
 
+
+
 export class PaginationDTO {
 	@Type(() => Number)
-	limit: number;
+	size: number;
 
 	@Type(() => Number)
-	offset: number;
+	page: number;
+
+	search: string;
+
+	sortBy: EVENTS_FILTER;
+
+	sortOrder: ORDER
 }
 
 

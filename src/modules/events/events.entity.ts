@@ -1,5 +1,4 @@
 import { User } from '@/modules/users/user.entity';
-import { Exclude } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum EventStatus {
@@ -30,14 +29,6 @@ export class EventsEntity {
 	@Column({ name: 'end_date', type: 'date' })
 	endDate: Date;
 
-	@Exclude()
-	@Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-	createdAt: Date;
-
-	@Exclude()
-	@Column({ name: "updated_at", type: "timestamp", nullable: true, default: null })
-	updatedAt: Date | null;
-
 	@Column({name: "is_active", type: "boolean"})
 	isActive: boolean;
 
@@ -47,4 +38,11 @@ export class EventsEntity {
 	@Column({name: "end_time", type: "time"})
 	endTime: string;
 
+	// @Exclude()
+	@Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+	createdAt: Date;
+
+	// @Exclude()
+	@Column({ name: "updated_at", type: "timestamp", nullable: true, default: null })
+	updatedAt: Date | null;
 }

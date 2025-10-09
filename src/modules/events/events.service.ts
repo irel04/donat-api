@@ -1,15 +1,18 @@
 import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { EVENTS_FILTER, ORDER } from '@/types/filter';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class EventsService {
 	constructor (
 		@InjectRepository(EventsEntity)
-		private eventsRepository: Repository<EventsEntity>
+		private eventsRepository: Repository<EventsEntity>,
 	){}
+
+	private logger: Logger = new Logger();
 
 
 	async createEvent(payload: CreateEventDTO, userId: string): Promise<EventsEntity>{
@@ -34,13 +37,35 @@ export class EventsService {
 		return foundEvent;
 	}
 	
-	async findAllEvents(limit: number = 20, offset: number = 0): Promise<{ data: EventsEntity[], total: number }> {
+	async findAllEvents(limit: number = 20, offset: number = 0, search: string, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<{ data: EventsEntity[], total: number }> {
+
+		const where = {};
+		const order: Record<string, string> = {
+			createdAt: "DESC"
+		};
+
+		if(search){
+			where["description"] = ILike(search);
+		}
+
+		/* eslint-disable @typescript-eslint/no-unused-vars*/
+		if(Object.entries(EVENTS_FILTER).some(([_, val]) => val === sortBy)){
+			order[EVENTS_FILTER.CREATED_AT] = sortOrder ?? ORDER.DESC 
+		}
+
+		this.logger.debug("Options ->", {...where, ...order})
+
 
 		const [data, total] = await this.eventsRepository.findAndCount({
-			relations: ['user'],
+			where: {
+				isActive: true,
+				...where
+			},
+			order,
 			skip: offset,
 			take: limit
 		})
+
 
 		return { data, total };
 	}
