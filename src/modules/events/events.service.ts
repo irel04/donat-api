@@ -1,7 +1,7 @@
 import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 
@@ -11,8 +11,6 @@ export class EventsService {
 		@InjectRepository(EventsEntity)
 		private eventsRepository: Repository<EventsEntity>,
 	){}
-
-	private logger: Logger = new Logger();
 
 
 	async createEvent(payload: CreateEventDTO, userId: string): Promise<EventsEntity>{
@@ -52,8 +50,6 @@ export class EventsService {
 		if(Object.entries(EVENTS_FILTER).some(([_, val]) => val === sortBy)){
 			order[EVENTS_FILTER.CREATED_AT] = sortOrder ?? ORDER.DESC 
 		}
-
-		this.logger.debug("Options ->", {...where, ...order})
 
 
 		const [data, total] = await this.eventsRepository.findAndCount({
