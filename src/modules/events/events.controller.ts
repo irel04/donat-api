@@ -5,7 +5,8 @@ import { PaginationMetadata } from '@/common/interceptors/transform.interceptor'
 import { CreateEventDTO, PaginationDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
 // import { EVENTS_FILTER, ORDER } from '@/types/filter';
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller({
@@ -14,12 +15,13 @@ import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Dele
 })
 export class EventsController {
 	constructor(
-		private eventService: EventsService
+		private eventService: EventsService,
 	){}
 
 	@Post()
-	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UserParam("sub") userId: string){
-		return this.eventService.createEvent(createEventDto, userId);
+	@UseInterceptors(FilesInterceptor('files[]', 3))
+	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UploadedFiles() files: Express.Multer.File[], @UserParam("sub") userId: string){
+		return this.eventService.createEvent(userId, createEventDto, files);
 	}
 
 	@Public()

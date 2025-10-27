@@ -1,3 +1,4 @@
+import { CloudinaryService } from '@/modules/cloudinary/cloudinary.service';
 import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
@@ -10,28 +11,30 @@ export class EventsService {
 	constructor (
 		@InjectRepository(EventsEntity)
 		private eventsRepository: Repository<EventsEntity>,
+		private cloudinaryService: CloudinaryService
+		
 	){}
 
 
-	async createEvent(payload: CreateEventDTO, userId: string): Promise<EventsEntity>{
-		
+	async createEvent(userId: string, payload: CreateEventDTO, files: Express.Multer.File[]): Promise<EventsEntity>{
+
+
 		const event = this.eventsRepository.create({
 			...payload,
 			status: EventStatus.PENDING,
 			user: { id: userId }
 		})
 
+		this.cloudinaryService.upload(files)
+
 		const savedEvent = await this.eventsRepository.save(event);
 
-		const foundEvent = await this.eventsRepository.findOne({
-			where: {id: savedEvent.id},
-			relations: ['user']
-		});
+		const foundEvent = await this.findEventById(savedEvent.id);
 		
 		if (!foundEvent) {
 			throw new Error('Event not found after creation');
 		}
-		
+
 		return foundEvent;
 	}
 	
