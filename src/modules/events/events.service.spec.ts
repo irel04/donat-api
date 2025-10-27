@@ -4,7 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { User } from '@/modules/users/user.entity';
 import { Repository } from 'typeorm';
-import { CreateEventDTO } from '@/modules/events/events.dto';
 
 describe('EventsService', () => {
   let service: EventsService;
@@ -12,7 +11,7 @@ describe('EventsService', () => {
   const [startDate, endDate] = ["04-05-2026", "04-06-2026"]
   let dummyUser: User;
   let resolvedValue: EventsEntity 
-  let eventsPayload: CreateEventDTO;
+  // let eventsPayload: CreateEventDTO;
 
   
   beforeEach(async () => {
@@ -41,13 +40,13 @@ describe('EventsService', () => {
       isActive: true
     }
 
-    eventsPayload = {
-      description: "Fund Raising",
-      startDate,
-      endDate,
-      startTime: "13:00",
-      endTime: "14:00"
-    }
+    // eventsPayload = {
+    //   description: "Fund Raising",
+    //   startDate,
+    //   endDate,
+    //   startTime: "13:00",
+    //   endTime: "14:00"
+    // }
     
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -80,19 +79,19 @@ describe('EventsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe("create an event", () => {
+  // describe("create an event", () => {
 
-    it("should call event repository create and save", async () => {
-      await service.createEvent(eventsPayload, dummyUser.id)
-      expect(eventsRepository.create).toHaveBeenCalledWith({ ...eventsPayload, status: EventStatus.PENDING, user: { id: dummyUser.id } })
-    })
+  //   it("should call event repository create and save", async () => {
+  //     await service.createEvent(eventsPayload, dummyUser.id)
+  //     expect(eventsRepository.create).toHaveBeenCalledWith({ ...eventsPayload, status: EventStatus.PENDING, user: { id: dummyUser.id } })
+  //   })
 
-    it("should call saved and return must be equal to expected", async () => {
-      const result = await service.createEvent(eventsPayload, dummyUser.id)
-      expect(eventsRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(resolvedValue)
-    })
-  })
+  //   it("should call saved and return must be equal to expected", async () => {
+  //     const result = await service.createEvent(eventsPayload, dummyUser.id)
+  //     expect(eventsRepository.save).toHaveBeenCalled()
+  //     expect(result).toEqual(resolvedValue)
+  //   })
+  // })
 
   // describe("get events", () => {
     

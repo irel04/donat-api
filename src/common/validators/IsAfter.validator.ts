@@ -3,10 +3,10 @@
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
 import { isBefore, isEqual, parse } from 'date-fns';
 
-export function IsBeforeConstraint(property: string, validationOptions?: ValidationOptions){
+export function IsAfterConstraint(property: string, validationOptions?: ValidationOptions){
 	return function (object: any, propertyName: string){
 		registerDecorator({
-			name: "IsBeforeConstraint",
+			name: "IsAfterConstraint",
 			target: object.constructor,
 			propertyName,
 			options: validationOptions,

@@ -1,12 +1,12 @@
 /* eslint-disable */
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
-import { isBefore, parse } from 'date-fns';
+import { isAfter, parse } from 'date-fns';
 
 
-export function IsBeforeDateConstraint (property: string, validationOptions?: ValidationOptions){
+export function IsAfterDateConstraint (property: string, validationOptions?: ValidationOptions){
 	return function (object: any, propertyName: string){
 		registerDecorator({
-			name: "IsBeforeDateConstraint",
+			name: "IsAfterDateConstraint",
 			propertyName,
 			target: object.constructor,
 			constraints: [property],
@@ -18,18 +18,18 @@ export function IsBeforeDateConstraint (property: string, validationOptions?: Va
 
 					if(!value || !relatedValue) return true;
 
-					const format = "MM-dd-yyyy";
+					const format = "yyyy-MM-dd";
 					const referenceDate = new Date();
 
 					const start = parse(relatedValue, format, referenceDate);
 
 					const end = parse(value, format, referenceDate);
-
-					return isBefore(start, end);
+					
+					return !isAfter(start, end);
 
 				},
 				defaultMessage(args: ValidationArguments){
-					return `${args.constraints[0]} must be before ${args.property}`
+					return `${args.constraints[0]} must be before or same ${args.property}`
 				}
 			}
 		})

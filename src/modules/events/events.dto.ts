@@ -1,5 +1,6 @@
-import { IsBeforeConstraint } from '@/common/validators/IsBefore.validator';
-import { IsBeforeDateConstraint } from '@/common/validators/IsBeforeDate.validator';
+import { IsAfterConstraint } from '@/common/validators/IsAfter.validator';
+import { IsAfterDateConstraint } from '@/common/validators/IsAfterDate.validator';
+import { EventsEntity } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
@@ -13,16 +14,16 @@ export class CreateEventDTO {
 	description: string;
 
 	@IsNotEmpty()
-	@Matches(/^\d{2}-\d{2}-\d{4}$/, {
-    message: 'startDate must be in MM-DD-YYYY format',
-  })
+	@Matches(/^\d{4}-\d{2}-\d{2}$/, {
+		message: 'startDate must be in YYYY-MM-DD format',
+	})
 	startDate: string;
-	
+
 	@IsNotEmpty()
-	@Matches(/^\d{2}-\d{2}-\d{4}$/, {
-    message: 'endDate must be in MM-DD-YYYY format',
-  })
-	@IsBeforeDateConstraint("startDate")
+	@Matches(/^\d{4}-\d{2}-\d{2}$/, {
+		message: 'endDate must be in YYYY-MM-DD format',
+	})
+	@IsAfterDateConstraint("startDate")
 	endDate: string;
 
 	@IsNotEmpty()
@@ -32,16 +33,14 @@ export class CreateEventDTO {
 	startTime: string;
 
 	@IsNotEmpty()
-	@IsBeforeConstraint("startTime")
+	@IsAfterConstraint("startTime")
 	@Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
 		message: "endTime must follow HH:mm format"
 	})
 	endTime: string;
 }
 
-export class UpdateEventDTO extends PartialType(CreateEventDTO){}
-
-
+export class UpdateEventDTO extends PartialType(CreateEventDTO) { }
 
 export class PaginationDTO {
 	@Type(() => Number)
@@ -57,5 +56,7 @@ export class PaginationDTO {
 	sortOrder: ORDER
 }
 
-
+export class EventResponseDTO extends EventsEntity {
+	images: string[];
+}
 

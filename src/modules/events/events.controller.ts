@@ -21,6 +21,11 @@ export class EventsController {
 	@Post()
 	@UseInterceptors(FilesInterceptor('files[]', 3))
 	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UploadedFiles() files: Express.Multer.File[], @UserParam("sub") userId: string){
+
+		if(!files || files.length === 0){
+			throw new BadRequestException("At least one file is required to create an event")
+		}
+
 		return this.eventService.createEvent(userId, createEventDto, files);
 	}
 

@@ -1,23 +1,46 @@
 import { CloudinaryService } from '@/modules/cloudinary/cloudinary.service';
-import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
+import { CloudinaryResponse } from '@/modules/cloudinary/cloudinaryResponse';
+import { EventImageEntity } from '@/modules/events/eventImage.entity';
+import { CreateEventDTO, EventResponseDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class EventsService {
-	constructor (
+	constructor(
 		@InjectRepository(EventsEntity)
 		private eventsRepository: Repository<EventsEntity>,
-		private cloudinaryService: CloudinaryService
-		
-	){}
+		@InjectRepository(EventImageEntity)
+		private eventsImageRepository: Repository<EventImageEntity>,
+		private cloudinaryService: CloudinaryService,
+	) { }
+
+	private readonly logger = new Logger(EventsService.name);
+
+	async addImageUrlsToEvent(eventId: string, imageUrls: string[]) {
+		const event = await this.findEventById(eventId);
+
+		const images = imageUrls.map((url) =>
+			this.eventsImageRepository.create({ url, event })
+		);
+
+		const savedImages = await this.eventsImageRepository.save(images);
+
+		return savedImages;
+	}
 
 
-	async createEvent(userId: string, payload: CreateEventDTO, files: Express.Multer.File[]): Promise<EventsEntity>{
-
+	async createEvent(userId: string, payload: CreateEventDTO, files: Express.Multer.File[]): Promise<EventResponseDTO> {
+		let cloudinaryUploadResult: CloudinaryResponse[];
+		try {
+			cloudinaryUploadResult = await this.cloudinaryService.upload(files)
+		} catch (error) {
+			this.logger.error(`Cloudinary upload error: ${error.message}`, error.stack);
+			throw new InternalServerErrorException("Failed to upload files to Cloudinary");
+		}
 
 		const event = this.eventsRepository.create({
 			...payload,
@@ -25,19 +48,19 @@ export class EventsService {
 			user: { id: userId }
 		})
 
-		this.cloudinaryService.upload(files)
-
 		const savedEvent = await this.eventsRepository.save(event);
 
 		const foundEvent = await this.findEventById(savedEvent.id);
-		
+
 		if (!foundEvent) {
 			throw new Error('Event not found after creation');
 		}
 
-		return foundEvent;
+		const images = await this.addImageUrlsToEvent(foundEvent.id, cloudinaryUploadResult.map(res => res.secure_url));
+
+		return { ...foundEvent, images: images.map(img => img.url)};
 	}
-	
+
 	async findAllEvents(limit: number = 20, offset: number = 0, search: string, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<{ data: EventsEntity[], total: number }> {
 
 		const where = {};
@@ -45,13 +68,13 @@ export class EventsService {
 			createdAt: "DESC"
 		};
 
-		if(search){
+		if (search) {
 			where["description"] = ILike(`%${search}%`);
-		}	
+		}
 
 		/* eslint-disable @typescript-eslint/no-unused-vars*/
-		if(Object.entries(EVENTS_FILTER).some(([_, val]) => val === sortBy)){
-			order[EVENTS_FILTER.CREATED_AT] = sortOrder ?? ORDER.DESC 
+		if (Object.entries(EVENTS_FILTER).some(([_, val]) => val === sortBy)) {
+			order[EVENTS_FILTER.CREATED_AT] = sortOrder ?? ORDER.DESC
 		}
 
 
@@ -69,13 +92,13 @@ export class EventsService {
 		return { data, total };
 	}
 
-	async findEventById(id: string): Promise<EventsEntity>{
+	async findEventById(id: string): Promise<EventsEntity> {
 		const event = await this.eventsRepository.findOne({
 			where: { id, isActive: true },
 			relations: ['user']
 		});
 
-		if(!event) throw new NotFoundException(`Event with id ${id} not found`);
+		if (!event) throw new NotFoundException(`Event with id ${id} not found`);
 
 		return event;
 	}
@@ -91,7 +114,7 @@ export class EventsService {
 		return { data: events, total };
 	}
 
-	async editMyEvent(payload: UpdateEventDTO, eventId: string, userId: string): Promise<Partial<EventsEntity> | null>{
+	async editMyEvent(payload: UpdateEventDTO, eventId: string, userId: string): Promise<Partial<EventsEntity> | null> {
 
 		// Check if event is existing
 		const event = await this.eventsRepository.findOneBy({
@@ -101,7 +124,7 @@ export class EventsService {
 			}
 		})
 
-		if(!event) return null;
+		if (!event) return null;
 
 		// Proceed to editing when event is found
 		await this.eventsRepository.update({
@@ -116,22 +139,22 @@ export class EventsService {
 		})
 	}
 
-	async approveEvent (eventId: string){
+	async approveEvent(eventId: string) {
 		const result = await this.eventsRepository.update({ id: eventId }, { status: EventStatus.APPROVED })
 
-		if(result.affected === 0){
+		if (result.affected === 0) {
 			throw new NotFoundException("Event not found");
 		}
-		
+
 	}
 
-	async deleteEvent(eventId: string, userId: string){
+	async deleteEvent(eventId: string, userId: string) {
 		// Check first if event exist
 		const result = await this.eventsRepository.update({ id: eventId, user: { id: userId } }, {
 			isActive: false
 		})
 
-		if(result.affected === 0){
+		if (result.affected === 0) {
 			throw new NotFoundException("Event not found or already deleted")
 		}
 	}
