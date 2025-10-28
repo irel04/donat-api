@@ -1,6 +1,6 @@
-import { SignInDTO } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
-import { User } from '@/modules/users/user.entity';
+import { SignInDTO } from '@/modules/auth/dto/auth.dto';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,8 +13,8 @@ describe('AuthService', () => {
 		id: "1",
 		email: "test@example.com",
 		password: "hashed_password",
-		firstName:"John",
-		lastName:"Doe",
+		firstName: "John",
+		lastName: "Doe",
 		role: "user",
 		createdAt: new Date(),
 	}
@@ -50,7 +50,7 @@ describe('AuthService', () => {
 	});
 
 	describe("signIn", () => {
-		const signinDto: SignInDTO ={
+		const signinDto: SignInDTO = {
 			email: "test@example.com",
 			password: "password"
 		}

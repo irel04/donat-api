@@ -2,7 +2,9 @@ import { Public } from '@/common/decorators/public.decorator';
 import { Role, Roles } from '@/common/decorators/role.decorator';
 import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
-import { CreateEventDTO, PaginationDTO, UpdateEventDTO } from '@/modules/events/events.dto';
+import { CreateEventDTO } from '@/modules/events/dto/create-events.dto';
+import { PaginationDTO } from '@/modules/events/dto/paginated-events.dto';
+import { UpdateEventDTO } from '@/modules/events/dto/update-events.dto';
 import { EventsService } from '@/modules/events/events.service';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
 // import { EVENTS_FILTER, ORDER } from '@/types/filter';
@@ -17,13 +19,13 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 export class EventsController {
 	constructor(
 		private eventService: EventsService,
-	){}
+	) { }
 
 	@Post()
 	@UseInterceptors(FilesInterceptor('files[]', 3))
-	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UploadedFiles() files: Express.Multer.File[], @UserParam("sub") userId: string){
+	async postAnEvent(@Body() createEventDto: CreateEventDTO, @UploadedFiles() files: Express.Multer.File[], @UserParam("sub") userId: string) {
 
-		if(!files || files.length === 0){
+		if (!files || files.length === 0) {
 			throw new BadRequestException("At least one file is required to create an event")
 		}
 
@@ -33,8 +35,8 @@ export class EventsController {
 	@Public()
 	@Get()
 	async getAllEvents(@Query() { size = 20, page = 1, search, sortBy, sortOrder }: PaginationDTO) {
-		
-		if(page <= 0){
+
+		if (page <= 0) {
 			throw new BadRequestException("You cannot paginated less than or equal 0")
 		}
 
@@ -57,9 +59,9 @@ export class EventsController {
 	}
 
 	@Get('me')
-	async getMyEvents(@UserParam("sub") userId: string, @Query() { size = 20, page = 1, sortBy=EVENTS_FILTER.CREATED_AT, sortOrder=ORDER.DESC }: PaginationDTO) {
+	async getMyEvents(@UserParam("sub") userId: string, @Query() { size = 20, page = 1, sortBy = EVENTS_FILTER.CREATED_AT, sortOrder = ORDER.DESC }: PaginationDTO) {
 
-		if(page <= 0){
+		if (page <= 0) {
 			throw new BadRequestException("You cannot paginated less than or equal 0")
 		}
 
@@ -89,10 +91,10 @@ export class EventsController {
 	}
 
 	@Patch(":eventId/edit-my-event")
-	async editMyEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string, @Body() payload: UpdateEventDTO){
+	async editMyEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string, @Body() payload: UpdateEventDTO) {
 		const event = await this.eventService.editMyEvent(payload, eventId, userId)
 
-		if(!event){
+		if (!event) {
 			throw new NotFoundException("Event associated with the provided credential was not found")
 		}
 
@@ -103,14 +105,14 @@ export class EventsController {
 	@Patch(":eventId/approve-event")
 	@HttpCode(204)
 	@Roles(Role.Admin)
-	async approveEvent(@Param("eventId") eventId: string){
+	async approveEvent(@Param("eventId") eventId: string) {
 		await this.eventService.approveEvent(eventId);
 	}
 
 	// Soft delete - marking event as inactive and will delete using CRON 
 	@Delete(":eventId")
 	@HttpCode(204)
-	async deleteEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string){
+	async deleteEvent(@Param("eventId") eventId: string, @UserParam("sub") userId: string) {
 		await this.eventService.deleteEvent(eventId, userId);
 	}
 }

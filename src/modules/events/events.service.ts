@@ -1,8 +1,8 @@
 import { CloudinaryService } from '@/modules/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from '@/modules/cloudinary/cloudinaryResponse';
-import { EventImageEntity } from '@/modules/events/eventImage.entity';
-import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
-import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
+import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/dto/create-events.dto';
+import { EventImageEntity } from '@/modules/events/entities/event-image.entity';
+import { EventsEntity, EventStatus } from '@/modules/events/entities/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,7 +39,7 @@ export class EventsService {
 		try {
 			cloudinaryUploadResult = await this.cloudinaryService.upload(files)
 		} catch (error) {
-			if(error instanceof Error){
+			if (error instanceof Error) {
 				this.logger.error(`Cloudinary upload failed: ${error.message}`);
 			}
 			throw new InternalServerErrorException("Failed to upload files to Cloudinary");
@@ -53,9 +53,9 @@ export class EventsService {
 
 		const savedEvent = await this.eventsRepository.save(event);
 
-		
+
 		const imageUrls: string[] = (cloudinaryUploadResult as UploadApiResponse[]).map(res => res.secure_url);
-		
+
 		await this.addImageUrlsToEvent(savedEvent.id, imageUrls);
 
 		const foundEvent = await this.findEventById(savedEvent.id);

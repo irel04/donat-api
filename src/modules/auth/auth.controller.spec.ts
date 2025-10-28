@@ -1,6 +1,6 @@
 import { AuthController } from '@/modules/auth/auth.controller';
 import { AuthService } from '@/modules/auth/auth.service';
-import { User } from '@/modules/users/user.entity';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
 import { Test, TestingModule } from '@nestjs/testing';
 

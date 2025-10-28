@@ -1,5 +1,5 @@
 import { UserParam } from '@/common/decorators/user.decorator';
-import { User } from '@/modules/users/user.entity';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
 import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@nestjs/common';
 
@@ -9,10 +9,10 @@ import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@n
 	version: "1"
 })
 export class UsersController {
-	
+
 	constructor(
 		private service: UsersService,
-	){}
+	) { }
 
 
 	@Get("me")

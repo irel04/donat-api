@@ -1,7 +1,7 @@
 import { Public } from '@/common/decorators/public.decorator';
-import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
-import { User } from '@/modules/users/user.entity';
+import { CreateUserDto, SignInDTO, SignInResponseDTO } from '@/modules/auth/dto/auth.dto';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
 import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 

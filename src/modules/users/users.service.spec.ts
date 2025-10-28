@@ -1,11 +1,11 @@
-import { CreateUserDto } from '@/modules/auth/auth.dto';
-import { User } from '@/modules/users/user.entity';
+import { CreateUserDto } from '@/modules/auth/dto/auth.dto';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { randomUUID } from 'node:crypto';
+import { FindOneOptions, Repository } from 'typeorm';
 
 
 describe("User Service", () => {
@@ -66,22 +66,22 @@ describe("User Service", () => {
 		it("check the user with same email", async () => {
 			await expect(service.createUser(testingDTO)).rejects.toThrow("Email already registered")
 			// expect(userRepository.create).toHaveBeenCalledWith(testingDTO)
-	})
+		})
 
-	it("should hashed the password before saving", async () => {
-		const bcryptSpy = jest.spyOn(bcrypt, 'hash');
-		await service.createUser({...testingDTO, email: "john@example.com"});
-		expect(bcryptSpy).toHaveBeenCalled();
-		expect(bcryptSpy).toHaveBeenCalledWith(testingDTO.password, 10);
-		expect(userRepository.save).toHaveBeenCalled();
-	})
+		it("should hashed the password before saving", async () => {
+			const bcryptSpy = jest.spyOn(bcrypt, 'hash');
+			await service.createUser({ ...testingDTO, email: "john@example.com" });
+			expect(bcryptSpy).toHaveBeenCalled();
+			expect(bcryptSpy).toHaveBeenCalledWith(testingDTO.password, 10);
+			expect(userRepository.save).toHaveBeenCalled();
+		})
 	})
 
 	describe("findOne", () => {
 		it('return user using email', async () => {
 			await service.findOne(testingDTO.email);
 			expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: testingDTO.email } })
-			
+
 		})
 	})
 

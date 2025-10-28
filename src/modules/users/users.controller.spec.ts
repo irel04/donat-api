@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+import { User } from '@/modules/users/entities/user.entity';
 import { UsersService } from '@/modules/users/users.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import { User } from '@/modules/users/user.entity';
+import { UsersController } from './users.controller';
 
 describe('UsersController', () => {
   let controller: UsersController;

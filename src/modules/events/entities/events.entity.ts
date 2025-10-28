@@ -1,5 +1,5 @@
-import { EventImageEntity } from '@/modules/events/eventImage.entity';
-import { User } from '@/modules/users/user.entity';
+import { EventImageEntity } from '@/modules/events/entities/event-image.entity';
+import { User } from '@/modules/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum EventStatus {
@@ -33,13 +33,13 @@ export class EventsEntity {
 	@Column({ name: 'end_date', type: 'date' })
 	endDate: Date;
 
-	@Column({name: "is_active", type: "boolean"})
+	@Column({ name: "is_active", type: "boolean" })
 	isActive: boolean;
 
-	@Column({name: "start_time", type: "time"})
+	@Column({ name: "start_time", type: "time" })
 	startTime: string;
 
-	@Column({name: "end_time", type: "time"})
+	@Column({ name: "end_time", type: "time" })
 	endTime: string;
 
 	// @Exclude()

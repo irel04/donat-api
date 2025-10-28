@@ -1,16 +1,16 @@
-import { CreateUserDto } from '@/modules/auth/auth.dto';
-import { User } from '@/modules/users/user.entity';
+import { CreateUserDto } from '@/modules/auth/dto/auth.dto';
+import { User } from '@/modules/users/entities/user.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from "bcrypt";
 import { Repository } from 'typeorm';
-import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class UsersService {
-	constructor (
+	constructor(
 		@InjectRepository(User)
 		private readonly userRepository: Repository<User>,
-	){}
+	) { }
 
 	async createUser(payload: CreateUserDto): Promise<User> {
 
@@ -28,7 +28,7 @@ export class UsersService {
 			firstName: payload.firstName,
 			lastName: payload.lastName,
 		});
-		
+
 		return this.userRepository.save(user);
 	}
 

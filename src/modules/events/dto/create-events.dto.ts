@@ -1,8 +1,5 @@
-import { IsAfterConstraint } from '@/common/validators/IsAfter.validator';
-import { IsAfterDateConstraint } from '@/common/validators/IsAfterDate.validator';
-import { EVENTS_FILTER, ORDER } from '@/types/filter';
-import { PartialType } from '@nestjs/mapped-types';
-import { Type } from 'class-transformer';
+import { IsAfterConstraint } from '@/common/validators/is-after.validator';
+import { IsAfterDateConstraint } from '@/common/validators/is-after-date.validator';
 import { IsNotEmpty, Matches } from 'class-validator';
 
 
@@ -39,20 +36,5 @@ export class CreateEventDTO {
 	endTime: string;
 }
 
-export class UpdateEventDTO extends PartialType(CreateEventDTO) { }
-
-export class PaginationDTO {
-	@Type(() => Number)
-	size: number;
-
-	@Type(() => Number)
-	page: number;
-
-	search: string;
-
-	sortBy: EVENTS_FILTER;
-
-	sortOrder: ORDER
-}
 
 
