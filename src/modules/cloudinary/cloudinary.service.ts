@@ -1,3 +1,4 @@
+ 
 import { CloudinaryResponse } from '@/modules/cloudinary/cloudinaryResponse';
 import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from "cloudinary"
@@ -10,7 +11,7 @@ export class CloudinaryService {
 		const uploadPromises = files.map(file => new Promise<CloudinaryResponse>((resolve, reject) => {
 			const uploadStream = cloudinary.uploader.upload_stream(
 				(error, result) => {
-					if (error) return reject(new Error(error.message || String(error)));
+					if (error) return reject(new Error(error.message));
 
 					resolve(result as CloudinaryResponse);
 				}
