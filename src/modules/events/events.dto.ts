@@ -1,6 +1,5 @@
 import { IsAfterConstraint } from '@/common/validators/IsAfter.validator';
 import { IsAfterDateConstraint } from '@/common/validators/IsAfterDate.validator';
-import { EventsEntity } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
@@ -56,7 +55,4 @@ export class PaginationDTO {
 	sortOrder: ORDER
 }
 
-export class EventResponseDTO extends EventsEntity {
-	images: string[];
-}
 

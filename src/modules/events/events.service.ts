@@ -1,7 +1,7 @@
 import { CloudinaryService } from '@/modules/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from '@/modules/cloudinary/cloudinaryResponse';
 import { EventImageEntity } from '@/modules/events/eventImage.entity';
-import { CreateEventDTO, EventResponseDTO, UpdateEventDTO } from '@/modules/events/events.dto';
+import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsEntity, EventStatus } from '@/modules/events/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
@@ -33,7 +33,7 @@ export class EventsService {
 	}
 
 
-	async createEvent(userId: string, payload: CreateEventDTO, files: Express.Multer.File[]): Promise<EventResponseDTO> {
+	async createEvent(userId: string, payload: CreateEventDTO, files: Express.Multer.File[]): Promise<EventsEntity> {
 		let cloudinaryUploadResult: CloudinaryResponse[];
 		try {
 			cloudinaryUploadResult = await this.cloudinaryService.upload(files)
@@ -50,15 +50,15 @@ export class EventsService {
 
 		const savedEvent = await this.eventsRepository.save(event);
 
+		await this.addImageUrlsToEvent(savedEvent.id, cloudinaryUploadResult.map(res => res.secure_url));
+
 		const foundEvent = await this.findEventById(savedEvent.id);
 
 		if (!foundEvent) {
 			throw new Error('Event not found after creation');
 		}
 
-		const images = await this.addImageUrlsToEvent(foundEvent.id, cloudinaryUploadResult.map(res => res.secure_url));
-
-		return { ...foundEvent, images: images.map(img => img.url)};
+		return foundEvent;
 	}
 
 	async findAllEvents(limit: number = 20, offset: number = 0, search: string, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<{ data: EventsEntity[], total: number }> {
@@ -84,6 +84,7 @@ export class EventsService {
 				...where
 			},
 			order,
+			relations: ['user', 'images'],
 			skip: offset,
 			take: limit
 		})
@@ -95,7 +96,7 @@ export class EventsService {
 	async findEventById(id: string): Promise<EventsEntity> {
 		const event = await this.eventsRepository.findOne({
 			where: { id, isActive: true },
-			relations: ['user']
+			relations: ['user', 'images']
 		});
 
 		if (!event) throw new NotFoundException(`Event with id ${id} not found`);
@@ -103,12 +104,13 @@ export class EventsService {
 		return event;
 	}
 
-	async findEventByUser(userId: string, limit: number = 20, offset: number = 0): Promise<{ data: EventsEntity[], total: number }> {
+	async findEventByUser(userId: string, limit: number = 20, offset: number = 0, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<{ data: EventsEntity[], total: number }> {
 		const [events, total] = await this.eventsRepository.findAndCount({
 			where: { user: { id: userId } },
 			skip: offset,
 			take: limit,
-			relations: ["user"]
+			relations: ["user", 'images'],
+			order: { [sortBy]: sortOrder }
 		})
 
 		return { data: events, total };

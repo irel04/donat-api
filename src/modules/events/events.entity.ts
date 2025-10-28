@@ -1,5 +1,6 @@
+import { EventImageEntity } from '@/modules/events/eventImage.entity';
 import { User } from '@/modules/users/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum EventStatus {
 	APPROVED = "approved",
@@ -19,6 +20,9 @@ export class EventsEntity {
 
 	@Column()
 	description: string;
+
+	@OneToMany(() => EventImageEntity, (image) => image.event, { cascade: true })
+	images: EventImageEntity[];
 
 	@Column({ type: 'enum', enum: EventStatus })
 	status: EventStatus;

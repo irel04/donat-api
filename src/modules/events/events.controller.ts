@@ -4,6 +4,7 @@ import { UserParam } from '@/common/decorators/user.decorator';
 import { PaginationMetadata } from '@/common/interceptors/transform.interceptor';
 import { CreateEventDTO, PaginationDTO, UpdateEventDTO } from '@/modules/events/events.dto';
 import { EventsService } from '@/modules/events/events.service';
+import { EVENTS_FILTER, ORDER } from '@/types/filter';
 // import { EVENTS_FILTER, ORDER } from '@/types/filter';
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -56,7 +57,7 @@ export class EventsController {
 	}
 
 	@Get('me')
-	async getMyEvents(@UserParam("sub") userId: string, @Query() { size = 20, page = 1 }: PaginationDTO) {
+	async getMyEvents(@UserParam("sub") userId: string, @Query() { size = 20, page = 1, sortBy=EVENTS_FILTER.CREATED_AT, sortOrder=ORDER.DESC }: PaginationDTO) {
 
 		if(page <= 0){
 			throw new BadRequestException("You cannot paginated less than or equal 0")
@@ -64,7 +65,7 @@ export class EventsController {
 
 		const offset = (page - 1) * size
 
-		const { data, total } = await this.eventService.findEventByUser(userId, size, offset);
+		const { data, total } = await this.eventService.findEventByUser(userId, size, offset, sortBy, sortOrder);
 
 		const metadata: PaginationMetadata = {
 			size,
