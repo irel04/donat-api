@@ -4,7 +4,10 @@ import { UsersService } from '@/modules/users/users.service';
 import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller('users')
+@Controller({
+	path: "user",
+	version: "1"
+})
 export class UsersController {
 	
 	constructor(
@@ -12,7 +15,7 @@ export class UsersController {
 	){}
 
 
-	@Get('me')
+	@Get("me")
 	getUserById(@UserParam("sub") sub: string): Promise<User | null> {
 		return this.service.findByUserId(sub)
 	}

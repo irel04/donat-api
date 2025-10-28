@@ -6,7 +6,10 @@ import { UsersService } from '@/modules/users/users.service';
 import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller('auth')
+@Controller({
+	path: "auth",
+	version: "1"
+})
 export class AuthController {
 	constructor(private readonly userService: UsersService, private readonly authService: AuthService) { }
 

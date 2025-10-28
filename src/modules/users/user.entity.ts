@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({name: "users"})
 export class User {
-	@Exclude()
+	// @Exclude()
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 

@@ -2,10 +2,18 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Response } from 'express';
 import { map, Observable } from 'rxjs';
 
-
+export interface PaginationMetadata {
+	total: number;
+	size: number;
+	page: number;
+	totalPage: number;
+	nextPage: number | null;
+}
 export interface TResponse<T> {
 	status: number;
-	data: T
+	data: T,
+	metaData: PaginationMetadata | null;
+	timestamp: Date;
 }
 
 @Injectable()
@@ -17,11 +25,27 @@ export class TransformInterceptor<T> implements NestInterceptor<T, TResponse<T>>
 
 
 		return next.handle().pipe(
-			map((data: T) => ({
-				status: res.statusCode,
-				data: { ...data },
-				timestamp: new Date()
-			}))
+			map((data: T) => {
+
+				if(data && typeof data === "object" && "data" in data && "metadata" in data){
+
+					const { data: paginatedData, metadata } = data as { data: T, metadata: PaginationMetadata };
+
+					return {
+						status: res.statusCode,
+						data: Array.isArray(paginatedData) ? paginatedData : { ...paginatedData },
+						metaData: metadata,
+						timestamp: new Date()
+					}
+				}
+
+				return {
+					status: res.statusCode,
+					data: Array.isArray(data) ? data : { ...data },
+					metaData: null,
+					timestamp: new Date()
+				}
+			})
 		);
 	}
 }
