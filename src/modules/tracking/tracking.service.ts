@@ -2,7 +2,7 @@ import { CreateTrackingDto } from '@/modules/tracking/dto/create-tracking.dto';
 import { TrackingEntity } from '@/modules/tracking/entities/tracking.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class TrackingService {
@@ -11,11 +11,20 @@ export class TrackingService {
 		private trackingRepository: Repository<TrackingEntity>,
 	){}
 
-	async create(createTrackingDto: CreateTrackingDto): Promise<TrackingEntity> {
-		const tracking = this.trackingRepository.create(createTrackingDto);
+	async create(createTrackingDto: CreateTrackingDto, manager?: EntityManager): Promise<TrackingEntity> {
+		const { donationId, ...trackingData } = createTrackingDto;
 
-		await this.trackingRepository.save(tracking);
-		
+		const tracking = this.trackingRepository.create({
+			donation: { id: donationId },
+			...trackingData
+		});
+
+		if (manager) {
+			await manager.save(tracking);
+		} else {
+			await this.trackingRepository.save(tracking);
+		}
+
 		return tracking;
 	}
 
