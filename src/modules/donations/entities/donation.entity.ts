@@ -1,7 +1,8 @@
 import { EventsEntity } from '@/modules/events/entities/events.entity';
+import { TrackingEntity } from '@/modules/tracking/entities/tracking.entity';
 import { User } from '@/modules/users/entities/user.entity';
 import { DONATION_TYPE } from '@/types/dontation-type';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity("donations")
 export class Donation {
@@ -16,6 +17,9 @@ export class Donation {
 	@ManyToOne(() => EventsEntity)
 	@JoinColumn({ name: "event_id" })
 	event: EventsEntity;
+
+	@OneToMany(() => TrackingEntity, (tracking) => tracking.donation)
+	trackingRecords: TrackingEntity[];
 
 	@Column()
 	name: string;

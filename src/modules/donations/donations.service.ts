@@ -5,6 +5,10 @@ import { Donation } from '@/modules/donations/entities/donation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventsService } from '@/modules/events/events.service';
+import { TrackingService } from '@/modules/tracking/tracking.service';
+import { DONATION_TYPE } from '@/types/dontation-type';
+import { TRACKING_STATUS } from '@/types/tracking-status';
+import { generateTrackingNumber } from '@/common/utils/tracking-number-generator';
 
 @Injectable()
 export class DonationsService {
@@ -12,6 +16,7 @@ export class DonationsService {
     @InjectRepository(Donation)
     private donationRepository: Repository<Donation>,
     private eventsService: EventsService,
+    private trackingService: TrackingService,
   ){}
 
   async create(eventId: string, userId: string, createDonationDto: CreateDonationDto): Promise<Donation> {
@@ -27,7 +32,17 @@ export class DonationsService {
 
     await this.donationRepository.save(donationRequest);
 
+    const trackingRecord = await this.trackingService.create({
+      donationId: donationRequest.id,
+      status: TRACKING_STATUS.FOR_VERIFICATION,
+      trackingNumber: generateTrackingNumber()
+    });
+
+    
+
     const donationRecord = await this.findOne(donationRequest.id);
+
+
 
     return donationRecord;
 
@@ -40,7 +55,7 @@ export class DonationsService {
   async findOne(id: string) {
     const donation = await this.donationRepository.findOne({
       where: { id: id },
-      relations: ['user', 'event'],
+      relations: ['user', 'event', 'trackingRecords'],
     });
 
     if (!donation) throw new NotFoundException(`Donation with id ${id} not found`);

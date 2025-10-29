@@ -6,6 +6,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { EventsModule } from './modules/events/events.module';
 import { UsersModule } from './modules/users/users.module';
 import { DonationsModule } from './modules/donations/donations.module';
+import { TrackingModule } from './modules/tracking/tracking.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DonationsModule } from './modules/donations/donations.module';
     EventsModule,
     CloudinaryModule,
     DonationsModule,
+    TrackingModule,
   ],
 })
 export class AppModule { }
