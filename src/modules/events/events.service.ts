@@ -1,6 +1,7 @@
 import { CloudinaryService } from '@/modules/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from '@/modules/cloudinary/cloudinaryResponse';
-import { CreateEventDTO, UpdateEventDTO } from '@/modules/events/dto/create-events.dto';
+import { CreateEventDTO } from '@/modules/events/dto/create-events.dto';
+import { UpdateEventDTO } from '@/modules/events/dto/update-events.dto';
 import { EventImageEntity } from '@/modules/events/entities/event-image.entity';
 import { EventsEntity, EventStatus } from '@/modules/events/entities/events.entity';
 import { EVENTS_FILTER, ORDER } from '@/types/filter';

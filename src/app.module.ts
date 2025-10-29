@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { EventsModule } from './modules/events/events.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
-import { TrackingModule } from './modules/tracking/tracking.module';
+import { EventsModule } from './modules/events/events.module';
+import { UsersModule } from './modules/users/users.module';
+import { DonationsModule } from './modules/donations/donations.module';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { TrackingModule } from './modules/tracking/tracking.module';
     UsersModule,
     EventsModule,
     CloudinaryModule,
-    TrackingModule,
+    DonationsModule,
   ],
 })
 export class AppModule { }

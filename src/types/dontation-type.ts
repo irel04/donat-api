@@ -1,0 +1,5 @@
+export enum DONATION_TYPE {
+	CASH = 'CASH',
+	FOODS = 'FOODS',
+	CLOTHES = 'CLOTHES',
+}
