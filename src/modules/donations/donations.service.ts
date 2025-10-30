@@ -57,21 +57,23 @@ export class DonationsService {
     })
   }
 
-  async findAll(size: number = 50, page: number = 1, sortBy: SORT_BY = SORT_BY.CREATED_AT, sortOrder: ORDER = ORDER.DESC, filter: DONATIONS_FILTER): Promise<DataAndTotal<Donation>> {
+  async findAll(eventId: string, size: number = 50, page: number = 1, sortBy: SORT_BY = SORT_BY.CREATED_AT, sortOrder: ORDER = ORDER.DESC, filter: DONATIONS_FILTER): Promise<DataAndTotal<Donation>> {
 
     let where: FindOptionsWhere<Donation> | FindOptionsWhere<Donation>[] = [];
 
-    
+    if (filter.search) {
+      const search = ILike(`%${filter.search}%`);
+      const baseCondition = { event: { id: eventId }, ...(filter.type && { type: filter.type }) };
 
-    if(filter.search){
-      const search = ILike(`%${filter.search}%`)
       where = [
-        { ...(filter.type ? { type: filter.type } : {}), name: search },
-        { ...(filter.type ? { type: filter.type } : {}), description: search },
-      ]
-    } else if (filter.type) {
-      where = [{ type: filter.type }];
+        { ...baseCondition, name: search },
+        { ...baseCondition, description: search },
+      ];
+    } else {
+      where = [{ event: { id: eventId }, ...(filter.type && { type: filter.type }) }];
     }
+
+
 
     const [data, total] = await this.donationRepository.findAndCount({
       where,
@@ -80,9 +82,10 @@ export class DonationsService {
       order: {
         [sortBy]: sortOrder
       },
-      relations: ['user', 'event'],
+      relations: ["user"]
     });
 
+  
     return { data, total };
   }
 
@@ -107,12 +110,20 @@ export class DonationsService {
     return donation;
   }
 
-  update(id: string, updateDonationDto: UpdateDonationDto) {
-    console.info(updateDonationDto)
-    return `This action updates a #${id} donation`;
+  async update(id: string, userId: string, updateDonationDto: UpdateDonationDto): Promise<void> {
+    const updateResult = await this.donationRepository.update({ id, user: { id: userId } }, updateDonationDto)
+
+    if(updateResult.affected === 0){
+      throw new NotFoundException("No donation found with the provided ID")
+    }
+    
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} donation`;
+  async remove(id: string): Promise<void> {
+    const deletedRow = await this.donationRepository.delete({ id })
+
+    if(deletedRow.affected === 0){
+      throw new NotFoundException("No donation found with the provided ID")
+    }
   }
 }

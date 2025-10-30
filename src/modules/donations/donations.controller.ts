@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, ClassSerializerInterceptor, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, ClassSerializerInterceptor, BadRequestException, Query, HttpCode } from '@nestjs/common';
 import { DonationsService } from './donations.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { UpdateDonationDto } from './dto/update-donation.dto';
@@ -23,12 +23,14 @@ export class DonationsController {
   }
 
   @Public()
-  @Get()
-  async findAll(@Query() {page=1, size=10, ...queries}: DonationQueryDto) {
+  @Get(":eventId")
+  async findAll(@Query() {page=1, size=10, ...queries}: DonationQueryDto, @Param("eventId") eventId: string) {
+
+    if(eventId === ":eventId") throw new BadRequestException("Event id not found")
 
     const { type, search } = queries
     
-    const { data, total } = await this.donationsService.findAll(size, page, queries.sortBy, queries.sortOrder, {
+    const { data, total } = await this.donationsService.findAll(eventId, size, page, queries.sortBy, queries.sortOrder, {
       search,
       type
     });
@@ -51,13 +53,15 @@ export class DonationsController {
     return this.donationsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDonationDto: UpdateDonationDto) {
-    return this.donationsService.update(id, updateDonationDto);
+  @Patch(':donationId')
+  @HttpCode(204)
+  update(@Param('donationId') donationId: string, @UserParam("sub") userId: string, @Body() updateDonationDto: UpdateDonationDto) {
+    return this.donationsService.update(donationId, userId, updateDonationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.donationsService.remove(+id);
+  @Delete(':donationId')
+  @HttpCode(204)
+  remove(@Param('donationId') id: string) {
+    return this.donationsService.remove(id);
   }
 }
