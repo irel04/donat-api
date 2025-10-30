@@ -1,4 +1,5 @@
-import { EVENTS_FILTER, ORDER } from '@/types/filter';
+import { EVENTS_FILTER } from '@/types/filter';
+import { ORDER } from '@/types/sort';
 import { Type } from 'class-transformer';
 
 export class PaginationDTO {

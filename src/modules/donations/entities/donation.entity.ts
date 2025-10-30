@@ -31,5 +31,5 @@ export class Donation {
 	type: DONATION_TYPE;
 
 	@Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-	date: Date;
+	createdAt: Date;
 }

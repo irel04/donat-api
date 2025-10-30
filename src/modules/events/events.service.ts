@@ -4,7 +4,9 @@ import { CreateEventDTO } from '@/modules/events/dto/create-events.dto';
 import { UpdateEventDTO } from '@/modules/events/dto/update-events.dto';
 import { EventImageEntity } from '@/modules/events/entities/event-image.entity';
 import { EventsEntity, EventStatus } from '@/modules/events/entities/events.entity';
-import { EVENTS_FILTER, ORDER } from '@/types/filter';
+import { DataAndTotal } from '@/types/data-and-total';
+import { EVENTS_FILTER } from '@/types/filter';
+import { ORDER } from '@/types/sort';
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UploadApiResponse } from 'cloudinary';
@@ -68,7 +70,7 @@ export class EventsService {
 		return foundEvent;
 	}
 
-	async findAllEvents(limit: number = 20, offset: number = 0, search: string, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<{ data: EventsEntity[], total: number }> {
+	async findAllEvents(limit: number = 20, offset: number = 0, search: string, sortBy: EVENTS_FILTER, sortOrder: ORDER): Promise<DataAndTotal<EventsEntity>> {
 
 		const where = {};
 		const order: Record<string, string> = {

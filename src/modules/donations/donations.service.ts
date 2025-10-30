@@ -3,11 +3,14 @@ import { CreateDonationDto } from './dto/create-donation.dto';
 import { UpdateDonationDto } from './dto/update-donation.dto';
 import { Donation } from '@/modules/donations/entities/donation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { EventsService } from '@/modules/events/events.service';
 import { TrackingService } from '@/modules/tracking/tracking.service';
 import { TRACKING_STATUS } from '@/types/tracking-status';
 import { generateTrackingNumber } from '@/common/utils/tracking-number-generator';
+import { DONATIONS_FILTER } from '@/types/filter';
+import { ORDER, SORT_BY } from '@/types/sort';
+import { DataAndTotal } from '@/types/data-and-total';
 
 @Injectable()
 export class DonationsService {
@@ -47,15 +50,40 @@ export class DonationsService {
 
         return donationRecord;
       } catch (error) {
-        console.error(`Error finding donation record: ${error.message}`);
-        throw new InternalServerErrorException('Failed to retrieve donation record after creation');
+        console.error(`Error: ${error.message}`);
+        throw new InternalServerErrorException(error.message);
       }
 
     })
   }
 
-  findAll() {
-    return `This action returns all donations`;
+  async findAll(size: number = 50, page: number = 1, sortBy: SORT_BY = SORT_BY.CREATED_AT, sortOrder: ORDER = ORDER.DESC, filter: DONATIONS_FILTER): Promise<DataAndTotal<Donation>> {
+
+    let where: FindOptionsWhere<Donation> | FindOptionsWhere<Donation>[] = [];
+
+    
+
+    if(filter.search){
+      const search = ILike(`%${filter.search}%`)
+      where = [
+        { ...(filter.type ? { type: filter.type } : {}), name: search },
+        { ...(filter.type ? { type: filter.type } : {}), description: search },
+      ]
+    } else if (filter.type) {
+      where = [{ type: filter.type }];
+    }
+
+    const [data, total] = await this.donationRepository.findAndCount({
+      where,
+      take: size,
+      skip: (page - 1) * size,
+      order: {
+        [sortBy]: sortOrder
+      },
+      relations: ['user', 'event'],
+    });
+
+    return { data, total };
   }
 
   async findOne(id: string, manager?: EntityManager) {

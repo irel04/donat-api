@@ -6,8 +6,8 @@ import { CreateEventDTO } from '@/modules/events/dto/create-events.dto';
 import { PaginationDTO } from '@/modules/events/dto/paginated-events.dto';
 import { UpdateEventDTO } from '@/modules/events/dto/update-events.dto';
 import { EventsService } from '@/modules/events/events.service';
-import { EVENTS_FILTER, ORDER } from '@/types/filter';
-// import { EVENTS_FILTER, ORDER } from '@/types/filter';
+import { EVENTS_FILTER } from '@/types/filter';
+import { ORDER } from '@/types/sort';
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 

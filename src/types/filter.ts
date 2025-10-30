@@ -1,9 +1,11 @@
+import { DONATION_TYPE } from '@/types/dontation-type';
+
 export enum EVENTS_FILTER {
 	CREATED_AT="createdAt",
 	STATUS="status"
 }
 
-export enum ORDER {
-	ASC="ASC",
-	DESC="DESC"
+export interface DONATIONS_FILTER {
+	type: DONATION_TYPE | undefined,
+	search: string | undefined,
 }
